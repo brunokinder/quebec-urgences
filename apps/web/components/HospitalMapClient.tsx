@@ -1,7 +1,8 @@
 "use client";
 
 import "leaflet/dist/leaflet.css";
-import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet";
+import { useEffect } from "react";
+import { MapContainer, TileLayer, CircleMarker, Popup, useMap } from "react-leaflet";
 import type { UrgenceSnapshot } from "@quebec-urgences/shared";
 import {
   CRITICAL_OCCUPATION_THRESHOLD,
@@ -9,6 +10,31 @@ import {
 } from "@quebec-urgences/shared";
 import { getHospitalCoords } from "@/lib/hospitalCoordinates";
 import Link from "next/link";
+
+const QUEBEC_CITY: [number, number] = [46.8139, -71.208];
+
+function GeolocationController() {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      map.flyTo(QUEBEC_CITY, 10, { duration: 1.2 });
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        map.flyTo([pos.coords.latitude, pos.coords.longitude], 11, { duration: 1.5 });
+      },
+      () => {
+        map.flyTo(QUEBEC_CITY, 10, { duration: 1.2 });
+      },
+      { timeout: 8000 }
+    );
+  }, [map]);
+
+  return null;
+}
 
 interface Props {
   snapshots: UrgenceSnapshot[];
@@ -29,6 +55,7 @@ export default function HospitalMapClient({ snapshots }: Props) {
       style={{ height: "100%", width: "100%", background: "#0d1117" }}
       zoomControl={true}
     >
+      <GeolocationController />
       <TileLayer
         url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
