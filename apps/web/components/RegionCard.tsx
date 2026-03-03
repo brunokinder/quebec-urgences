@@ -1,5 +1,5 @@
-import type { RegionSummary } from "@urgences-quebec/shared";
-import { CRITICAL_OCCUPATION_THRESHOLD, HIGH_OCCUPATION_THRESHOLD } from "@urgences-quebec/shared";
+import type { RegionSummary } from "@quebec-urgences/shared";
+import { CRITICAL_OCCUPATION_THRESHOLD, HIGH_OCCUPATION_THRESHOLD } from "@quebec-urgences/shared";
 
 interface Props {
   region: RegionSummary;

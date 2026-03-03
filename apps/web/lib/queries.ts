@@ -1,5 +1,5 @@
 import { supabase } from "./supabase";
-import type { UrgenceSnapshot, RegionSummary } from "@urgences-quebec/shared";
+import type { UrgenceSnapshot, RegionSummary } from "@quebec-urgences/shared";
 
 /**
  * Latest snapshot for every hospital (via the urgences_latest view).
