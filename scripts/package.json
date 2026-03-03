@@ -1,0 +1,9 @@
+{
+  "name": "@urgences-quebec/scripts",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "@supabase/supabase-js": "^2.47.2",
+    "csv-parse": "^5.5.6"
+  }
+}
