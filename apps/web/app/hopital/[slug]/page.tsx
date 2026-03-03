@@ -7,7 +7,7 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
-export const revalidate = 300;
+export const dynamic = "force-dynamic";
 
 export default async function HospitalPage({ params }: Props) {
   const { slug } = await params;
