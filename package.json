@@ -2,11 +2,7 @@
   "name": "quebec-urgences",
   "version": "0.0.1",
   "private": true,
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
-  "scripts": {
+"scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
