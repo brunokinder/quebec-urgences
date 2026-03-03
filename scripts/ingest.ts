@@ -29,24 +29,10 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
 // ─── CSV column name → our field mapping ────────────────────────────────────
 
-// The CSV uses French column headers. We map them to our schema fields.
-// Adjust if MSSS changes their column names.
-const COLUMN_MAP: Record<string, keyof UrgenceRow> = {
-  "Nom de l'installation": "nom_installation",
-  "Région sociosanitaire": "region",
-  "Nombre de civières fonctionnelles": "nb_civieres",
-  "Nombre de patients sur civières": "nb_patients_civieres",
-  "Taux d'occupation des civières (%)": "taux_occupation",
-  "Nombre de patients sur civières depuis plus de 24h": "nb_patients_civieres_24h",
-  "Nombre de patients sur civières depuis plus de 48h": "nb_patients_civieres_48h",
-  "Nombre de personnes présentes": "nb_personnes_presentes",
-  "Nombre de personnes en cours d'évaluation (PEC)": "nb_pec",
-  "Durée moyenne de séjour - ambulatoire (h)": "dms_ambulatoire",
-  "Durée moyenne de séjour - civières (h)": "dms_civieres",
-};
-
-// Timestamp column in the CSV
-const TIMESTAMP_COL = "Heure du relevé";
+// As of 2026-03 the MSSS CSV uses comma-delimited snake_case English headers.
+// taux_occupation is not provided — computed from occupees / fonctionnelles.
+// Adjust if MSSS changes their column names again.
+const TIMESTAMP_COL = "Mise_a_jour";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -60,6 +46,15 @@ function toInt(value: string | undefined): number | null {
   if (value === undefined || value === "" || value === "N/D") return null;
   const n = parseInt(value, 10);
   return isNaN(n) ? null : n;
+}
+
+// CSV timestamp format is "2026-03-03T8:45" — pad hour to get valid ISO.
+function parseTimestamp(value: string): string {
+  if (!value) return "";
+  const [datePart, timePart] = value.split("T");
+  if (!datePart || !timePart) return value;
+  const [hours, minutes] = timePart.split(":");
+  return `${datePart}T${(hours ?? "0").padStart(2, "0")}:${(minutes ?? "00").padStart(2, "0")}:00`;
 }
 
 // ─── Fetch ───────────────────────────────────────────────────────────────────
@@ -108,7 +103,7 @@ function parseCsv(raw: string): ParsedRow[] {
   const records: Record<string, string>[] = parse(raw, {
     columns: true,
     skip_empty_lines: true,
-    delimiter: ";",
+    delimiter: ",",
     trim: true,
     bom: true,
   });
@@ -117,31 +112,45 @@ function parseCsv(raw: string): ParsedRow[] {
     throw new Error("CSV is empty — possible format change.");
   }
 
-  const firstRow = records[0];
-  const csvCols = Object.keys(firstRow);
-
-  // Validate required columns exist
-  const requiredCols = [TIMESTAMP_COL, ...Object.keys(COLUMN_MAP)];
+  const csvCols = Object.keys(records[0]);
+  const requiredCols = [
+    TIMESTAMP_COL,
+    "Nom_installation",
+    "Region",
+    "Nombre_de_civieres_fonctionnelles",
+    "Nombre_de_civieres_occupees",
+  ];
   const missing = requiredCols.filter((c) => !csvCols.includes(c));
   if (missing.length > 0) {
     console.warn(`WARNING: Missing CSV columns: ${missing.join(", ")}`);
     console.warn(`Available columns: ${csvCols.join(", ")}`);
   }
 
-  return records.map((row) => ({
-    timestamp: row[TIMESTAMP_COL] ?? "",
-    nom_installation: row[COLUMN_MAP["Nom de l'installation"] ?? ""] ?? row["Nom de l'installation"] ?? "",
-    region: row[COLUMN_MAP["Région sociosanitaire"] ?? ""] ?? row["Région sociosanitaire"] ?? "",
-    nb_civieres: toInt(row["Nombre de civières fonctionnelles"]),
-    nb_patients_civieres: toInt(row["Nombre de patients sur civières"]),
-    taux_occupation: toNum(row["Taux d'occupation des civières (%)"]),
-    nb_patients_civieres_24h: toInt(row["Nombre de patients sur civières depuis plus de 24h"]),
-    nb_patients_civieres_48h: toInt(row["Nombre de patients sur civières depuis plus de 48h"]),
-    nb_personnes_presentes: toInt(row["Nombre de personnes présentes"]),
-    nb_pec: toInt(row["Nombre de personnes en cours d'évaluation (PEC)"]),
-    dms_ambulatoire: toNum(row["Durée moyenne de séjour - ambulatoire (h)"]),
-    dms_civieres: toNum(row["Durée moyenne de séjour - civières (h)"]),
-  })).filter((r) => r.nom_installation && r.timestamp);
+  return records
+    .map((row) => {
+      const nbCivieres = toInt(row["Nombre_de_civieres_fonctionnelles"]);
+      const nbOccupees = toInt(row["Nombre_de_civieres_occupees"]);
+      const taux =
+        nbCivieres && nbCivieres > 0 && nbOccupees !== null
+          ? Math.round((nbOccupees / nbCivieres) * 10000) / 100
+          : null;
+
+      return {
+        timestamp: parseTimestamp(row[TIMESTAMP_COL] ?? ""),
+        nom_installation: row["Nom_installation"] ?? "",
+        region: row["Region"] ?? "",
+        nb_civieres: nbCivieres,
+        nb_patients_civieres: nbOccupees,
+        taux_occupation: taux,
+        nb_patients_civieres_24h: toInt(row["Nombre_de_patients_sur_civiere_plus_de_24_heures"]),
+        nb_patients_civieres_48h: toInt(row["Nombre_de_patients_sur_civiere_plus_de_48_heures"]),
+        nb_personnes_presentes: toInt(row["Nombre_total_de_patients_presents_a_lurgence"]),
+        nb_pec: toInt(row["Nombre_total_de_patients_en_attente_de_PEC"]),
+        dms_ambulatoire: toNum(row["DMS_ambulatoire"]),
+        dms_civieres: toNum(row["DMS_sur_civiere"]),
+      };
+    })
+    .filter((r) => r.nom_installation && r.nom_installation !== "Total régional" && r.timestamp);
 }
 
 // ─── Archive raw CSV ─────────────────────────────────────────────────────────
