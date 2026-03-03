@@ -61,9 +61,9 @@ cp .env.example .env.local
 
 ```env
 SUPABASE_URL=https://xxxx.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=...        # Settings > API > service_role
+SUPABASE_SERVICE_ROLE_KEY=...        # Settings > API > "secret" key (formerly service_role)
 NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=...   # Settings > API > anon
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...   # Settings > API > "publishable" key (formerly anon)
 ```
 
 ### 3. Run your first ingestion
@@ -139,10 +139,14 @@ Next.js Dashboard (Vercel)
 
 ### Vercel (recommended)
 
-1. Import the repository into Vercel
-2. Set `apps/web` as the root directory (or use the Turborepo preset)
-3. Add `NEXT_PUBLIC_SUPABASE_*` environment variables
-4. Deploy
+1. Go to [vercel.com/new](https://vercel.com/new) and import `brunokinder/quebec-urgences`
+2. Set **Root Directory** to `apps/web`
+3. Add the following environment variables:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+4. Click **Deploy**
+
+Vercel auto-detects Next.js and handles builds. Future pushes to `main` deploy automatically.
 
 ---
 

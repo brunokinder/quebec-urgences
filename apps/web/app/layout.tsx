@@ -15,22 +15,34 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr">
-      <body className="min-h-screen bg-gray-50 text-gray-900">
-        <header className="bg-white border-b border-gray-200 px-4 py-3">
-          <div className="max-w-7xl mx-auto flex items-center gap-3">
-            <span className="text-2xl" aria-hidden>🏥</span>
-            <div>
-              <h1 className="text-lg font-bold leading-none">Urgences Québec</h1>
-              <p className="text-xs text-gray-500">Taux d&apos;occupation — données MSSS</p>
+      <body className="min-h-screen bg-surface text-slate-100">
+        <header className="bg-surface-card border-b border-surface-border px-4 py-3 sticky top-0 z-50 backdrop-blur-sm">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center">
+                <span className="text-lg" aria-hidden>🏥</span>
+              </div>
+              <div>
+                <h1 className="text-base font-bold leading-none text-slate-50 tracking-tight">
+                  Urgences Québec
+                </h1>
+                <p className="text-xs text-slate-500 mt-0.5">Taux d&apos;occupation — données MSSS</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-xs text-slate-500 hidden sm:block">Temps réel</span>
             </div>
           </div>
         </header>
+
         <main className="max-w-7xl mx-auto px-4 py-6">{children}</main>
-        <footer className="mt-12 border-t border-gray-200 py-4 text-center text-xs text-gray-400">
+
+        <footer className="mt-12 border-t border-surface-border py-5 text-center text-xs text-slate-600">
           Données: MSSS / Console provinciale des urgences — Licence CC-BY 4.0 —{" "}
           <a
             href="https://github.com/brunokinder/quebec-urgences"
-            className="underline hover:text-gray-600"
+            className="text-slate-500 hover:text-slate-300 underline transition-colors"
             target="_blank"
             rel="noopener noreferrer"
           >
