@@ -5,7 +5,7 @@ interface Props {
 export function StatusBadge({ lastIngestion }: Props) {
   if (!lastIngestion) {
     return (
-      <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full">
+      <span className="text-xs text-slate-500 bg-surface-subtle px-2 py-1 rounded-full border border-surface-border">
         Aucune ingestion
       </span>
     );
@@ -25,15 +25,16 @@ export function StatusBadge({ lastIngestion }: Props) {
   return (
     <div className="text-right">
       <span
-        className={`text-xs px-2 py-1 rounded-full ${
+        className={`text-xs px-2.5 py-1 rounded-full border font-medium ${
           stale
-            ? "bg-amber-100 text-amber-700"
-            : "bg-green-100 text-green-700"
+            ? "bg-amber-500/10 text-amber-400 border-amber-500/30"
+            : "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
         }`}
       >
+        <span className={`inline-block w-1.5 h-1.5 rounded-full mr-1.5 align-middle ${stale ? "bg-amber-400" : "bg-emerald-400"}`} />
         {stale ? "Données périmées" : "Données récentes"}
       </span>
-      <p className="text-xs text-gray-400 mt-0.5">Dernière màj : {formatted}</p>
+      <p className="text-xs text-slate-600 mt-1">Dernière màj : {formatted}</p>
     </div>
   );
 }

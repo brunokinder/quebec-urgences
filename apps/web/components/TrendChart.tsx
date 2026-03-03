@@ -19,7 +19,7 @@ interface Props {
 
 export function TrendChart({ data }: Props) {
   if (data.length === 0) {
-    return <p className="text-sm text-gray-400 italic">Aucune donnée disponible.</p>;
+    return <p className="text-sm text-slate-500 italic">Aucune donnée disponible.</p>;
   }
 
   const chartData = data.map((s) => ({
@@ -37,39 +37,46 @@ export function TrendChart({ data }: Props) {
     <div className="h-64 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={chartData} margin={{ top: 4, right: 8, bottom: 4, left: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#21262d" />
           <XAxis
             dataKey="time"
-            tick={{ fontSize: 10, fill: "#9ca3af" }}
+            tick={{ fontSize: 10, fill: "#64748b" }}
             interval="preserveStartEnd"
           />
           <YAxis
-            tick={{ fontSize: 10, fill: "#9ca3af" }}
+            tick={{ fontSize: 10, fill: "#64748b" }}
             unit="%"
             domain={[0, "auto"]}
           />
           <Tooltip
+            contentStyle={{
+              backgroundColor: "#161b22",
+              border: "1px solid #30363d",
+              borderRadius: 8,
+              color: "#e2e8f0",
+              fontSize: 12,
+            }}
             formatter={(value: number) => [`${value?.toFixed(1)}%`, "Taux d'occupation"]}
           />
           <ReferenceLine
             y={CRITICAL_OCCUPATION_THRESHOLD}
-            stroke="#ef4444"
+            stroke="#f87171"
             strokeDasharray="4 4"
-            label={{ value: "100%", fill: "#ef4444", fontSize: 10 }}
+            label={{ value: "100%", fill: "#f87171", fontSize: 10 }}
           />
           <ReferenceLine
             y={HIGH_OCCUPATION_THRESHOLD}
-            stroke="#f59e0b"
+            stroke="#fbbf24"
             strokeDasharray="4 4"
-            label={{ value: "80%", fill: "#f59e0b", fontSize: 10 }}
+            label={{ value: "80%", fill: "#fbbf24", fontSize: 10 }}
           />
           <Line
             type="monotone"
             dataKey="taux"
-            stroke="#3b82f6"
+            stroke="#60a5fa"
             strokeWidth={2}
             dot={false}
-            activeDot={{ r: 4 }}
+            activeDot={{ r: 4, fill: "#60a5fa" }}
           />
         </LineChart>
       </ResponsiveContainer>

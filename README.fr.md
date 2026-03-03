@@ -61,9 +61,9 @@ cp .env.example .env.local
 
 ```env
 SUPABASE_URL=https://xxxx.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=...        # Settings > API > service_role
+SUPABASE_SERVICE_ROLE_KEY=...        # Settings > API > clé « secret » (anciennement service_role)
 NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=...   # Settings > API > anon
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...   # Settings > API > clé « publishable » (anciennement anon)
 ```
 
 ### 3. Lancer une première ingestion
@@ -139,10 +139,14 @@ Tableau de bord Next.js (Vercel)
 
 ### Vercel (recommandé)
 
-1. Importer le dépôt dans Vercel
-2. Définir `apps/web` comme dossier racine (ou utiliser le preset Turborepo)
-3. Ajouter les variables d'environnement `NEXT_PUBLIC_SUPABASE_*`
-4. Déployer
+1. Aller sur [vercel.com/new](https://vercel.com/new) et importer `brunokinder/quebec-urgences`
+2. Définir le **Dossier racine** à `apps/web`
+3. Ajouter les variables d'environnement suivantes :
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+4. Cliquer sur **Déployer**
+
+Vercel détecte automatiquement Next.js et gère les builds. Les futurs push vers `main` se déploient automatiquement.
 
 ---
 

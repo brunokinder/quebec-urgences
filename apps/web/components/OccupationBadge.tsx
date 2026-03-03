@@ -6,22 +6,22 @@ interface Props {
 }
 
 export function OccupationBadge({ rate, size = "md" }: Props) {
-  if (rate == null) return <span className="text-gray-400">—</span>;
+  if (rate == null) return <span className="text-slate-600">—</span>;
 
   const color =
     rate >= CRITICAL_OCCUPATION_THRESHOLD
-      ? "bg-red-100 text-red-700"
+      ? "bg-red-500/15 text-red-400 ring-1 ring-red-500/30"
       : rate >= HIGH_OCCUPATION_THRESHOLD
-      ? "bg-amber-100 text-amber-700"
-      : "bg-green-100 text-green-700";
+      ? "bg-amber-500/15 text-amber-400 ring-1 ring-amber-500/30"
+      : "bg-emerald-500/15 text-emerald-400 ring-1 ring-emerald-500/30";
 
   const textSize =
     size === "lg" ? "text-xl font-bold px-3 py-1" :
-    size === "sm" ? "text-xs px-2 py-0.5" :
+    size === "sm" ? "text-xs px-2 py-0.5 font-semibold" :
     "text-sm font-semibold px-2 py-0.5";
 
   return (
-    <span className={`inline-block rounded-full ${color} ${textSize}`}>
+    <span className={`inline-block rounded-full ${color} ${textSize} tabular-nums`}>
       {rate.toFixed(0)}%
     </span>
   );

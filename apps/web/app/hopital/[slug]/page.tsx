@@ -24,14 +24,21 @@ export default async function HospitalPage({ params }: Props) {
   return (
     <div className="space-y-6 max-w-3xl">
       <div>
-        <a href="/" className="text-sm text-blue-600 hover:underline">← Retour</a>
-        <h2 className="text-2xl font-bold mt-2">{current.nom_installation}</h2>
-        <p className="text-gray-500">{current.region}</p>
+        <a
+          href="/"
+          className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-300 transition-colors"
+        >
+          ← Retour au tableau de bord
+        </a>
+        <h2 className="text-2xl font-bold mt-3 text-slate-50 tracking-tight leading-tight">
+          {current.nom_installation}
+        </h2>
+        <p className="text-slate-500 mt-1">{current.region}</p>
       </div>
 
       {/* Key metrics */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <Metric label="Taux d'occupation" value={<OccupationBadge rate={current.taux_occupation} size="lg" />} />
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <Metric label="Taux d'occupation" value={<OccupationBadge rate={current.taux_occupation} size="lg" />} highlight />
         <Metric label="Patients / civières" value={`${current.nb_patients_civieres ?? "—"} / ${current.nb_civieres ?? "—"}`} />
         <Metric label="> 24h" value={current.nb_patients_civieres_24h ?? "—"} />
         <Metric label="> 48h" value={current.nb_patients_civieres_48h ?? "—"} />
@@ -42,8 +49,8 @@ export default async function HospitalPage({ params }: Props) {
       </div>
 
       {/* Trend chart */}
-      <div>
-        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
+      <div className="bg-surface-card rounded-xl border border-surface-border p-5">
+        <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-4">
           Taux d&apos;occupation — 7 derniers jours
         </h3>
         <TrendChart data={trend} />
@@ -52,11 +59,19 @@ export default async function HospitalPage({ params }: Props) {
   );
 }
 
-function Metric({ label, value }: { label: string; value: React.ReactNode }) {
+function Metric({
+  label,
+  value,
+  highlight = false,
+}: {
+  label: string;
+  value: React.ReactNode;
+  highlight?: boolean;
+}) {
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-4">
-      <p className="text-xs text-gray-400 mb-1">{label}</p>
-      <p className="text-lg font-semibold">{value}</p>
+    <div className={`bg-surface-card rounded-xl border p-4 ${highlight ? "border-surface-border" : "border-surface-border"}`}>
+      <p className="text-xs text-slate-500 mb-2 uppercase tracking-wide font-medium">{label}</p>
+      <div className="text-lg font-semibold text-slate-100">{value}</div>
     </div>
   );
 }
