@@ -1,5 +1,7 @@
+// Use the non-www host directly to avoid a 301 redirect that can strip
+// custom headers (User-Agent, Referer) in Node's fetch implementation.
 export const MSSS_CSV_URL =
-  "https://www.msss.gouv.qc.ca/professionnels/statistiques/documents/urgences/Releve_horaire_urgences_7jours_nbpers.csv";
+  "https://msss.gouv.qc.ca/professionnels/statistiques/documents/urgences/Releve_horaire_urgences_7jours_nbpers.csv";
 
 export const CKAN_API_URL =
   "https://www.donneesquebec.ca/recherche/api/3/action/datastore_search?resource_id=b256f87f-40ec-4c79-bdba-a23e9c50e741";

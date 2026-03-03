@@ -68,8 +68,12 @@ async function fetchCsv(): Promise<string> {
   console.log(`Fetching CSV from ${MSSS_CSV_URL} …`);
   const response = await fetch(MSSS_CSV_URL, {
     headers: {
-      // Some servers reject requests without a User-Agent
       "User-Agent": "quebec-urgences-bot/1.0 (github.com/brunokinder/quebec-urgences)",
+      // Referer and Accept are required by the MSSS server — omitting them
+      // causes a 403, particularly from CI/cloud IP ranges.
+      "Referer": "https://msss.gouv.qc.ca/professionnels/statistiques/documents/urgences/",
+      "Accept": "text/csv,text/plain,*/*",
+      "Accept-Language": "fr-CA,fr;q=0.9",
     },
   });
 
