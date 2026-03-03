@@ -69,7 +69,7 @@ async function fetchCsv(): Promise<string> {
   const response = await fetch(MSSS_CSV_URL, {
     headers: {
       // Some servers reject requests without a User-Agent
-      "User-Agent": "quebec-urgences-bot/1.0 (github.com/bkindera/quebec-urgences)",
+      "User-Agent": "quebec-urgences-bot/1.0 (github.com/brunokinder/quebec-urgences)",
     },
   });
 

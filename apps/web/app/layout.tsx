@@ -29,7 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <footer className="mt-12 border-t border-gray-200 py-4 text-center text-xs text-gray-400">
           Données: MSSS / Console provinciale des urgences — Licence CC-BY 4.0 —{" "}
           <a
-            href="https://github.com/bkindera/quebec-urgences"
+            href="https://github.com/brunokinder/quebec-urgences"
             className="underline hover:text-gray-600"
             target="_blank"
             rel="noopener noreferrer"

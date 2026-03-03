@@ -40,7 +40,7 @@ Dashboard open source affichant le taux d'occupation en **temps réel** des urge
 ### 1. Cloner le dépôt
 
 ```bash
-git clone https://github.com/bkindera/quebec-urgences.git
+git clone https://github.com/brunokinder/quebec-urgences.git
 cd quebec-urgences
 pnpm install
 ```
@@ -166,4 +166,4 @@ Les contributions sont les bienvenues !
 
 ## Licence
 
-[MIT](LICENSE) — © 2024 bkindera
+[MIT](LICENSE) — © 2024 brunokinder
