@@ -253,3 +253,18 @@ export function getHospitalCoords(
   const jitterLng = (((hash >> 8) & 0xff) / 255 - 0.5) * 1.4;
   return [center[0] + jitterLat, center[1] + jitterLng];
 }
+
+/** Haversine distance between two [lat, lng] points, in km. */
+export function distanceKm(a: [number, number], b: [number, number]): number {
+  const R = 6371;
+  const dLat = ((b[0] - a[0]) * Math.PI) / 180;
+  const dLng = ((b[1] - a[1]) * Math.PI) / 180;
+  const sinLat = Math.sin(dLat / 2);
+  const sinLng = Math.sin(dLng / 2);
+  const a2 =
+    sinLat * sinLat +
+    Math.cos((a[0] * Math.PI) / 180) *
+      Math.cos((b[0] * Math.PI) / 180) *
+      sinLng * sinLng;
+  return R * 2 * Math.atan2(Math.sqrt(a2), Math.sqrt(1 - a2));
+}
