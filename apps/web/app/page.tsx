@@ -3,7 +3,7 @@ import { RegionCard } from "@/components/RegionCard";
 import { HospitalTable } from "@/components/HospitalTable";
 import { StatusBadge } from "@/components/StatusBadge";
 
-export const revalidate = 300; // Revalidate every 5 minutes
+export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const [snapshots, regions, lastIngestion] = await Promise.all([
