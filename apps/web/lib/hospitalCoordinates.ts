@@ -81,18 +81,26 @@ export const KNOWN_HOSPITAL_COORDS: Array<[string, [number, number]]> = [
   ["HÔPITAL DE SAINT-HYACINTHE", [45.6281, -72.9500]],
   ["HÔPITAL PIERRE BOUCHER", [45.5167, -73.4167]],
 
-  // Capitale-Nationale
-  ["HÔPITAL ENFANT-JÉSUS", [46.8178, -71.2281]],
-  ["HÔPITAL SAINT-SACREMENT", [46.7945, -71.2622]],
-  ["HÔTEL-DIEU DE QUÉBEC", [46.8106, -71.2194]],
-  ["HÔPITAL LAVAL", [46.7778, -71.3444]],
-  ["IUCPQ", [46.7778, -71.3444]],
-  ["INSTITUT UNIVERSITAIRE DE CARDIOLOGIE", [46.7778, -71.3444]],
-  ["HÔPITAL DE L'ENFANT-JÉSUS", [46.8178, -71.2281]],
-  ["HÔPITAL JEFFERY HALE", [46.8022, -71.2561]],
-  ["CENTRE HOSPITALIER UNIVERSITAIRE DE QUÉBEC", [46.8178, -71.2281]],
-  ["CHUQ", [46.8178, -71.2281]],
-  ["CHU DE QUÉBEC", [46.8178, -71.2281]],
+  // Capitale-Nationale — CHU de Québec - Université Laval sites
+  ["CENTRE HOSPITALIER DE L'UNIVERSITÉ LAVAL", [46.7695, -71.2828]], // CHUL, 2705 boul. Laurier, Sainte-Foy
+  ["HÔPITAL DE L'ENFANT-JÉSUS", [46.8387, -71.2280]],               // 1401 18e Rue, Limoilou
+  ["HÔPITAL ENFANT-JÉSUS", [46.8387, -71.2280]],
+  ["HÔPITAL DU SAINT-SACREMENT", [46.7998, -71.2465]],              // 1050 ch. Sainte-Foy
+  ["HÔPITAL SAINT-SACREMENT", [46.7998, -71.2465]],
+  ["L'HÔTEL-DIEU DE QUÉBEC", [46.8091, -71.2064]],                  // 11 Côte du Palais
+  ["HÔTEL-DIEU DE QUÉBEC", [46.8091, -71.2064]],
+  ["HÔPITAL SAINT-FRANÇOIS D'ASSISE", [46.8283, -71.2375]],         // 10 rue de l'Espinay, Limoilou
+  ["HÔPITAL JEFFERY HALE", [46.7971, -71.2529]],                    // 1250 ch. Sainte-Foy
+  ["CENTRE HOSPITALIER UNIVERSITAIRE DE QUÉBEC", [46.7695, -71.2828]],
+  ["CHUQ", [46.7695, -71.2828]],
+  ["CHU DE QUÉBEC", [46.7695, -71.2828]],
+  // IUCPQ
+  ["IUCPQ", [46.7791, -71.2976]],
+  ["INSTITUT UNIVERSITAIRE DE CARDIOLOGIE ET DE PNEUMOLOGIE DE QUÉBEC", [46.7791, -71.2976]],
+  ["INSTITUT UNIVERSITAIRE DE CARDIOLOGIE", [46.7791, -71.2976]],
+  ["HÔPITAL LAVAL", [46.7791, -71.2976]],
+  // CIUSSS de la Capitale-Nationale community sites
+  ["HÔPITAL ET CLSC DE LA MALBAIE", [47.6514, -70.1583]],
 
   // Chaudière-Appalaches
   ["HÔTEL-DIEU DE LÉVIS", [46.8066, -71.1806]],
