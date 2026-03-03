@@ -1,5 +1,5 @@
 {
-  "name": "@urgences-quebec/scripts",
+  "name": "@quebec-urgences/scripts",
   "version": "0.0.1",
   "private": true,
   "dependencies": {

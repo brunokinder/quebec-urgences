@@ -10,8 +10,8 @@ import {
   ReferenceLine,
   ResponsiveContainer,
 } from "recharts";
-import type { UrgenceSnapshot } from "@urgences-quebec/shared";
-import { CRITICAL_OCCUPATION_THRESHOLD, HIGH_OCCUPATION_THRESHOLD } from "@urgences-quebec/shared";
+import type { UrgenceSnapshot } from "@quebec-urgences/shared";
+import { CRITICAL_OCCUPATION_THRESHOLD, HIGH_OCCUPATION_THRESHOLD } from "@quebec-urgences/shared";
 
 interface Props {
   data: UrgenceSnapshot[];

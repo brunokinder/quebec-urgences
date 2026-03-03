@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import type { UrgenceSnapshot } from "@urgences-quebec/shared";
+import type { UrgenceSnapshot } from "@quebec-urgences/shared";
 import { OccupationBadge } from "./OccupationBadge";
 import Link from "next/link";
 

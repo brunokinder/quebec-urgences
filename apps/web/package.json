@@ -1,5 +1,5 @@
 {
-  "name": "@urgences-quebec/web",
+  "name": "@quebec-urgences/web",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.47.2",
-    "@urgences-quebec/shared": "workspace:*",
+    "@quebec-urgences/shared": "workspace:*",
     "next": "^15.1.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

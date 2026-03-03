@@ -1,4 +1,4 @@
-import { CRITICAL_OCCUPATION_THRESHOLD, HIGH_OCCUPATION_THRESHOLD } from "@urgences-quebec/shared";
+import { CRITICAL_OCCUPATION_THRESHOLD, HIGH_OCCUPATION_THRESHOLD } from "@quebec-urgences/shared";
 
 interface Props {
   rate: number | null;
