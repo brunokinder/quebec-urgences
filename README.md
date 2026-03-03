@@ -1,5 +1,7 @@
 # Quebec Urgences
 
+*[Français](README.fr.md) | English*
+
 Open source dashboard displaying **real-time occupancy rates** of Quebec emergency rooms, with hourly historical data and trend analysis.
 
 > Data: MSSS / Console provinciale des urgences (CPU) — License **CC-BY 4.0**
