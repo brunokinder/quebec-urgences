@@ -1,6 +1,6 @@
 import { getLatestSnapshots, getRegionSummaries, getLastIngestion } from "@/lib/queries";
 import { RegionCard } from "@/components/RegionCard";
-import { HospitalTable } from "@/components/HospitalTable";
+import { HospitalCards } from "@/components/HospitalCards";
 import { StatusBadge } from "@/components/StatusBadge";
 import HospitalMapWrapper from "@/components/HospitalMapWrapper";
 
@@ -46,6 +46,14 @@ export default async function HomePage() {
         <StatusBadge lastIngestion={lastIngestion} />
       </div>
 
+      {/* Hospitals — nearest first */}
+      <section>
+        <h3 className="text-xs font-semibold mb-4 text-slate-500 uppercase tracking-widest">
+          Urgences près de vous
+        </h3>
+        <HospitalCards snapshots={snapshots} />
+      </section>
+
       {/* Regional overview */}
       <section>
         <h3 className="text-xs font-semibold mb-4 text-slate-500 uppercase tracking-widest">
@@ -82,14 +90,6 @@ export default async function HomePage() {
         <div className="rounded-xl overflow-hidden border border-surface-border" style={{ height: 520 }}>
           <HospitalMapWrapper snapshots={snapshots} />
         </div>
-      </section>
-
-      {/* Full hospital table */}
-      <section>
-        <h3 className="text-xs font-semibold mb-4 text-slate-500 uppercase tracking-widest">
-          Toutes les installations
-        </h3>
-        <HospitalTable snapshots={snapshots} />
       </section>
     </div>
   );
