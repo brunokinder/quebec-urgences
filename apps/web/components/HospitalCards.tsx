@@ -4,6 +4,7 @@ import { useState, useMemo, useCallback } from "react";
 import type { UrgenceSnapshot } from "@quebec-urgences/shared";
 import { HospitalCard } from "./HospitalCard";
 import { getHospitalCoords, distanceKm } from "@/lib/hospitalCoordinates";
+import { FSA_COORDS, getCoordsByFsa } from "@/lib/fsaCoordinates";
 
 interface Props {
   snapshots: UrgenceSnapshot[];
@@ -22,6 +23,12 @@ const INITIAL_COUNT = 8;
 async function geocodePostalCode(raw: string): Promise<[number, number] | null> {
   const fsa = raw.trim().slice(0, 3).toUpperCase();
   if (!/^[GHJghj][0-9][A-Za-z]$/.test(fsa)) return null;
+
+  // Local lookup first — instant, no network call
+  const local = getCoordsByFsa(fsa);
+  if (local) return local;
+
+  // Fall back to Nominatim for FSAs not in our table
   try {
     const res = await fetch(
       `https://nominatim.openstreetmap.org/search?postalcode=${encodeURIComponent(fsa)}&countrycodes=ca&format=json&limit=1`,
@@ -128,6 +135,12 @@ export function HospitalCards({ snapshots }: Props) {
 
         <span className="text-xs text-slate-600">ou</span>
 
+        <datalist id="fsa-list">
+          {Object.entries(FSA_COORDS).map(([fsa, { label }]) => (
+            <option key={fsa} value={fsa}>{label}</option>
+          ))}
+        </datalist>
+
         <form onSubmit={handlePostalSubmit} className="flex gap-1.5">
           <input
             type="text"
@@ -135,6 +148,7 @@ export function HospitalCards({ snapshots }: Props) {
             onChange={(e) => setPostalInput(e.target.value)}
             placeholder="Code postal (ex: H3A)"
             maxLength={7}
+            list="fsa-list"
             className="border border-surface-border rounded-lg px-3 py-1.5 text-sm w-44 bg-surface-card text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-slate-500"
           />
           <button
