@@ -1,43 +1,43 @@
-# Urgences Québec
+# Quebec Urgences
 
-Dashboard open source affichant le taux d'occupation en **temps réel** des urgences du Québec, avec historique et analyse de tendances.
+Open source dashboard displaying **real-time occupancy rates** of Quebec emergency rooms, with hourly historical data and trend analysis.
 
-> Données: MSSS / Console provinciale des urgences (CPU) — Licence **CC-BY 4.0**
+> Data: MSSS / Console provinciale des urgences (CPU) — License **CC-BY 4.0**
 
 ---
 
-## Fonctionnalités
+## Features
 
-- Taux d'occupation de ~200 installations, mis à jour chaque heure
-- Vue régionale avec indicateurs de surcharge
-- Détail par hôpital avec graphique de tendance (7 jours)
-- Filtre par région et recherche par nom
-- Archive CSV publique dans `/data/` (historique permanent)
-- Endpoint `/api/status` pour la santé du pipeline
+- Occupancy rates for ~200 hospitals, updated every hour
+- Regional overview with overcrowding indicators
+- Hospital detail page with 7-day hourly trend chart
+- Filter by region and search by name
+- Public CSV archive in `/data/` (permanent historical record)
+- `/api/status` endpoint for pipeline health monitoring
 
 ---
 
 ## Stack
 
-| Couche        | Outil                  |
+| Layer         | Tool                   |
 |---------------|------------------------|
 | Monorepo      | Turborepo              |
 | Frontend      | Next.js 15 (App Router)|
 | Styling       | Tailwind CSS           |
-| Base de données | Supabase (Postgres)  |
+| Database      | Supabase (Postgres)    |
 | Ingestion     | GitHub Actions (cron)  |
-| Langage       | TypeScript             |
+| Language      | TypeScript             |
 
 ---
 
-## Démarrage local
+## Getting Started
 
-### Prérequis
+### Prerequisites
 
 - Node.js ≥ 20
 - pnpm ≥ 9
 
-### 1. Cloner le dépôt
+### 1. Clone the repo
 
 ```bash
 git clone https://github.com/brunokinder/quebec-urgences.git
@@ -45,13 +45,13 @@ cd quebec-urgences
 pnpm install
 ```
 
-### 2. Configurer Supabase
+### 2. Set up Supabase
 
-1. Créer un projet sur [supabase.com](https://supabase.com)
-2. Dans l'éditeur SQL, exécuter les migrations dans l'ordre :
+1. Create a project at [supabase.com](https://supabase.com)
+2. In the SQL editor, run the migrations in order:
    - `supabase/migrations/001_create_snapshots.sql`
    - `supabase/migrations/002_rollup_function.sql`
-3. Copier `.env.example` en `.env.local` et remplir les variables :
+3. Copy `.env.example` to `.env.local` and fill in your keys:
 
 ```bash
 cp .env.example .env.local
@@ -64,13 +64,13 @@ NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=...   # Settings > API > anon
 ```
 
-### 3. Lancer une première ingestion
+### 3. Run your first ingestion
 
 ```bash
 pnpm ingest
 ```
 
-### 4. Démarrer le dashboard
+### 4. Start the dashboard
 
 ```bash
 pnpm dev
@@ -79,15 +79,15 @@ pnpm dev
 
 ---
 
-## Pipeline d'ingestion
+## Ingestion Pipeline
 
 ```
-CSV MSSS (toutes les heures)
+MSSS CSV (updated every hour)
         │
 GitHub Actions (cron: 5 * * * *)
         │  • Fetch CSV
-        │  • Parse + validation
-        │  • Upsert Supabase (ON CONFLICT DO NOTHING)
+        │  • Parse + validate
+        │  • Upsert into Supabase (ON CONFLICT DO NOTHING)
         │  • Archive CSV → /data/{year}/{month}/{day}T{hour}00Z.csv
         │
 Supabase — urgences_snapshots
@@ -95,75 +95,75 @@ Supabase — urgences_snapshots
 Next.js Dashboard (Vercel)
 ```
 
-### Secrets GitHub requis
+### Required GitHub Secrets
 
 | Secret | Description |
 |--------|-------------|
-| `SUPABASE_URL` | URL de votre projet Supabase |
-| `SUPABASE_SERVICE_ROLE_KEY` | Clé service role (Settings > API) |
+| `SUPABASE_URL` | Your Supabase project URL |
+| `SUPABASE_SERVICE_ROLE_KEY` | Service role key (Settings > API) |
 
 ---
 
-## Schéma de la base de données
+## Database Schema
 
 ### `urgences_snapshots`
 
-| Colonne | Type | Description |
-|---------|------|-------------|
-| `id` | uuid | Clé primaire |
-| `timestamp` | timestamptz | Heure du relevé |
-| `nom_installation` | text | Nom de l'établissement |
-| `region` | text | Région sociosanitaire |
-| `nb_civieres` | int | Civières fonctionnelles |
-| `nb_patients_civieres` | int | Patients sur civières |
-| `taux_occupation` | numeric | Taux d'occupation (%) |
-| `nb_patients_civieres_24h` | int | Patients > 24h |
-| `nb_patients_civieres_48h` | int | Patients > 48h |
-| `nb_personnes_presentes` | int | Personnes présentes |
-| `nb_pec` | int | En cours d'évaluation |
-| `dms_ambulatoire` | numeric | Durée moy. séjour ambulatoire (h) |
-| `dms_civieres` | numeric | Durée moy. séjour civières (h) |
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | uuid | Primary key |
+| `timestamp` | timestamptz | Snapshot time |
+| `nom_installation` | text | Hospital name |
+| `region` | text | Health region |
+| `nb_civieres` | int | Available stretchers |
+| `nb_patients_civieres` | int | Patients on stretchers |
+| `taux_occupation` | numeric | Occupancy rate (%) |
+| `nb_patients_civieres_24h` | int | Patients on stretchers > 24h |
+| `nb_patients_civieres_48h` | int | Patients on stretchers > 48h |
+| `nb_personnes_presentes` | int | Total people present |
+| `nb_pec` | int | Currently being assessed |
+| `dms_ambulatoire` | numeric | Avg ambulatory stay (h) |
+| `dms_civieres` | numeric | Avg stretcher stay (h) |
 
-### Stratégie de rétention
+### Retention Strategy
 
-- Données **horaires** conservées pour les **60 derniers jours**
-- Données plus anciennes **agrégées en moyennes journalières** (`urgences_daily_rollups`)
-- Le rollup est exécuté chaque dimanche via GitHub Actions
-- Archive CSV permanente dans `/data/` (dépôt Git)
-
----
-
-## Déploiement
-
-### Vercel (recommandé)
-
-1. Importer le dépôt dans Vercel
-2. Définir `apps/web` comme dossier racine (ou utiliser le preset Turborepo)
-3. Ajouter les variables d'environnement `NEXT_PUBLIC_SUPABASE_*`
-4. Déployer
+- **Hourly** data kept for the **last 60 days**
+- Older data is **aggregated into daily averages** (`urgences_daily_rollups`)
+- Rollup runs every Sunday via GitHub Actions
+- Raw CSV permanently archived in `/data/` (Git repository)
 
 ---
 
-## Contribuer
+## Deployment
 
-Les contributions sont les bienvenues !
+### Vercel (recommended)
 
-1. Fork le dépôt
-2. Créer une branche (`git checkout -b feature/ma-fonctionnalite`)
-3. Committer vos changements
-4. Ouvrir une Pull Request
+1. Import the repository into Vercel
+2. Set `apps/web` as the root directory (or use the Turborepo preset)
+3. Add `NEXT_PUBLIC_SUPABASE_*` environment variables
+4. Deploy
 
 ---
 
-## Source des données
+## Contributing
 
-- **Fournisseur:** Ministère de la Santé et des Services sociaux (MSSS)
+Contributions are welcome!
+
+1. Fork the repository
+2. Create a branch (`git checkout -b feat/my-feature`)
+3. Commit your changes
+4. Open a Pull Request
+
+---
+
+## Data Source
+
+- **Provider:** Ministère de la Santé et des Services sociaux (MSSS)
 - **Données Québec:** [b256f87f...](https://www.donneesquebec.ca/recherche/dataset/performance-du-reseau-hospitalier)
-- **Licence:** [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.fr)
-- **Fréquence:** Mise à jour horaire
+- **License:** [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+- **Frequency:** Hourly updates
 
 ---
 
-## Licence
+## License
 
 [MIT](LICENSE) — © 2024 brunokinder
