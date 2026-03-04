@@ -23,9 +23,9 @@ export default async function HomePage() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-slate-50 tracking-tight">Tableau de bord</h2>
+          <h2 className="text-2xl font-bold text-slate-50 tracking-tight">Urgences Québec</h2>
           <p className="text-sm text-slate-500 mt-1">
-            {snapshots.length} installations — données mises à jour chaque heure
+            {snapshots.length} installations · données mises à jour chaque heure
           </p>
           {/* Quick stats */}
           <div className="flex items-center gap-4 mt-3">
@@ -46,11 +46,8 @@ export default async function HomePage() {
         <StatusBadge lastIngestion={lastIngestion} />
       </div>
 
-      {/* Hospitals — nearest first */}
+      {/* Hospitals */}
       <section>
-        <h3 className="text-xs font-semibold mb-4 text-slate-500 uppercase tracking-widest">
-          Urgences près de vous
-        </h3>
         <HospitalCards snapshots={snapshots} />
       </section>
 
