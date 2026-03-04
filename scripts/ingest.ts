@@ -10,7 +10,7 @@ import { createClient } from "@supabase/supabase-js";
 import { parse } from "csv-parse/sync";
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { MSSS_CSV_URL } from "../packages/shared/src/constants.js";
+import { CKAN_API_URL, MSSS_CSV_URL } from "../packages/shared/src/constants.js";
 import type { UrgenceRow, IngestResult } from "../packages/shared/src/types.js";
 
 // ─── Config ─────────────────────────────────────────────────────────────────
@@ -48,24 +48,74 @@ function toInt(value: string | undefined): number | null {
   return isNaN(n) ? null : n;
 }
 
-// CSV timestamp format is "2026-03-03T8:45" — pad hour to get valid ISO.
+// MSSS timestamps are in Quebec local time (America/Toronto) with no offset,
+// e.g. "2026-03-03T8:45". We pad the hour and append the correct UTC offset
+// (EST −05:00 or EDT −04:00) so the value stored in the DB is unambiguous.
+function quebecUtcOffset(date: Date): string {
+  // Intl gives us e.g. "GMT-5" or "GMT-4" for the given instant
+  const part = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Toronto",
+    timeZoneName: "shortOffset",
+  })
+    .formatToParts(date)
+    .find((p) => p.type === "timeZoneName")?.value ?? "GMT-5";
+  const match = part.match(/GMT([+-]?\d+)/);
+  const h = match ? parseInt(match[1], 10) : -5;
+  const sign = h <= 0 ? "-" : "+";
+  return `${sign}${String(Math.abs(h)).padStart(2, "0")}:00`;
+}
+
 function parseTimestamp(value: string): string {
   if (!value) return "";
   const [datePart, timePart] = value.split("T");
   if (!datePart || !timePart) return value;
   const [hours, minutes] = timePart.split(":");
-  return `${datePart}T${(hours ?? "0").padStart(2, "0")}:${(minutes ?? "00").padStart(2, "0")}:00`;
+  const padded = `${datePart}T${(hours ?? "0").padStart(2, "0")}:${(minutes ?? "00").padStart(2, "0")}:00`;
+  const offset = quebecUtcOffset(new Date(padded));
+  return `${padded}${offset}`;
+}
+
+// ─── CKAN API types ─────────────────────────────────────────────────────────
+
+interface CkanRecord {
+  [key: string]: string | number | null;
+}
+
+interface CkanResponse {
+  success: boolean;
+  result: {
+    records: CkanRecord[];
+    total: number;
+  };
 }
 
 // ─── Fetch ───────────────────────────────────────────────────────────────────
 
+/** Primary source: Données Québec CKAN API (public, no rate limits). */
+async function fetchCkan(): Promise<CkanRecord[]> {
+  const url = `${CKAN_API_URL}&limit=300`;
+  console.log(`Fetching from CKAN API …`);
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`CKAN HTTP ${response.status} — ${response.statusText}`);
+  }
+
+  const json = (await response.json()) as CkanResponse;
+  if (!json.success) {
+    throw new Error("CKAN API returned success=false");
+  }
+
+  console.log(`CKAN returned ${json.result.records.length} / ${json.result.total} records.`);
+  return json.result.records;
+}
+
+/** Fallback: direct MSSS CSV (may 403 from cloud IPs). */
 async function fetchCsv(): Promise<string> {
-  console.log(`Fetching CSV from ${MSSS_CSV_URL} …`);
+  console.log(`Falling back to MSSS CSV from ${MSSS_CSV_URL} …`);
   const response = await fetch(MSSS_CSV_URL, {
     headers: {
       "User-Agent": "quebec-urgences-bot/1.0 (github.com/brunokinder/quebec-urgences)",
-      // Referer and Accept are required by the MSSS server — omitting them
-      // causes a 403, particularly from CI/cloud IP ranges.
       "Referer": "https://msss.gouv.qc.ca/professionnels/statistiques/documents/urgences/",
       "Accept": "text/csv,text/plain,*/*",
       "Accept-Language": "fr-CA,fr;q=0.9",
@@ -73,10 +123,9 @@ async function fetchCsv(): Promise<string> {
   });
 
   if (!response.ok) {
-    throw new Error(`HTTP ${response.status} — ${response.statusText}`);
+    throw new Error(`MSSS HTTP ${response.status} — ${response.statusText}`);
   }
 
-  // The CSV is Latin-1 / Windows-1252 encoded
   const buffer = await response.arrayBuffer();
   const decoder = new TextDecoder("windows-1252");
   return decoder.decode(buffer);
@@ -97,6 +146,34 @@ interface ParsedRow {
   nb_pec: number | null;
   dms_ambulatoire: number | null;
   dms_civieres: number | null;
+}
+
+function parseCkanRecords(records: CkanRecord[]): ParsedRow[] {
+  return records
+    .map((row) => {
+      const nbCivieres = toInt(String(row["Nombre_de_civieres_fonctionnelles"] ?? ""));
+      const nbOccupees = toInt(String(row["Nombre_de_civieres_occupees"] ?? ""));
+      const taux =
+        nbCivieres && nbCivieres > 0 && nbOccupees !== null
+          ? Math.round((nbOccupees / nbCivieres) * 10000) / 100
+          : null;
+
+      return {
+        timestamp: parseTimestamp(String(row["Mise_a_jour"] ?? "")),
+        nom_installation: String(row["Nom_installation"] ?? ""),
+        region: String(row["Region"] ?? ""),
+        nb_civieres: nbCivieres,
+        nb_patients_civieres: nbOccupees,
+        taux_occupation: taux,
+        nb_patients_civieres_24h: toInt(String(row["Nombre_de_patients_sur_civiere_plus_de_24_heures"] ?? "")),
+        nb_patients_civieres_48h: toInt(String(row["Nombre_de_patients_sur_civiere_plus_de_48_heures"] ?? "")),
+        nb_personnes_presentes: toInt(String(row["Nombre_total_de_patients_presents_a_lurgence"] ?? "")),
+        nb_pec: toInt(String(row["Nombre_total_de_patients_en_attente_de_PEC"] ?? "")),
+        dms_ambulatoire: toNum(String(row["DMS_ambulatoire"] ?? "")),
+        dms_civieres: toNum(String(row["DMS_sur_civiere"] ?? "")),
+      };
+    })
+    .filter((r) => r.nom_installation && r.nom_installation !== "Total régional" && r.timestamp);
 }
 
 function parseCsv(raw: string): ParsedRow[] {
@@ -225,32 +302,41 @@ async function main(): Promise<void> {
   const fetchedAt = new Date();
   console.log(`\n=== Urgences Québec — Ingest [${fetchedAt.toISOString()}] ===\n`);
 
-  let raw: string;
-  try {
-    raw = await fetchCsv();
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    console.error("Fetch failed:", message);
-    await logResult({ fetched_at: fetchedAt.toISOString(), row_count: 0, inserted: 0, skipped: 0, errors: 1, success: false, message });
-    process.exit(1);
-  }
-
   let rows: ParsedRow[];
+  let rawCsv: string | null = null;
+  let source: string;
+
+  // Primary: CKAN API (public open data, no rate limits)
   try {
-    rows = parseCsv(raw);
-    console.log(`Parsed ${rows.length} rows.`);
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    console.error("Parse failed:", message);
-    await logResult({ fetched_at: fetchedAt.toISOString(), row_count: 0, inserted: 0, skipped: 0, errors: 1, success: false, message });
-    process.exit(1);
+    const records = await fetchCkan();
+    rows = parseCkanRecords(records);
+    source = "CKAN";
+    console.log(`Parsed ${rows.length} rows from CKAN API.`);
+  } catch (ckanErr) {
+    const ckanMsg = ckanErr instanceof Error ? ckanErr.message : String(ckanErr);
+    console.warn(`CKAN failed (${ckanMsg}), trying MSSS CSV fallback…`);
+
+    // Fallback: direct CSV from MSSS
+    try {
+      rawCsv = await fetchCsv();
+      rows = parseCsv(rawCsv);
+      source = "MSSS CSV";
+      console.log(`Parsed ${rows.length} rows from MSSS CSV.`);
+    } catch (csvErr) {
+      const message = csvErr instanceof Error ? csvErr.message : String(csvErr);
+      console.error("Both sources failed. CSV error:", message);
+      await logResult({ fetched_at: fetchedAt.toISOString(), row_count: 0, inserted: 0, skipped: 0, errors: 1, success: false, message: `CKAN: ${ckanMsg} | CSV: ${message}` });
+      process.exit(1);
+    }
   }
 
-  // Archive raw file (best-effort — don't fail ingest if this fails)
-  try {
-    archiveCsv(raw, fetchedAt);
-  } catch (err) {
-    console.warn("Archive failed (non-fatal):", err instanceof Error ? err.message : err);
+  // Archive raw CSV (best-effort — only when we have CSV data)
+  if (rawCsv) {
+    try {
+      archiveCsv(rawCsv, fetchedAt);
+    } catch (err) {
+      console.warn("Archive failed (non-fatal):", err instanceof Error ? err.message : err);
+    }
   }
 
   const { inserted, skipped, errors } = await upsert(rows);
@@ -266,7 +352,7 @@ async function main(): Promise<void> {
 
   await logResult(result);
 
-  console.log(`\nDone. inserted=${inserted} skipped=${skipped} errors=${errors}\n`);
+  console.log(`\nDone [${source}]. inserted=${inserted} skipped=${skipped} errors=${errors}\n`);
 
   if (errors > 0) {
     process.exit(1);
