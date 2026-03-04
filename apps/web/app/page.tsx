@@ -51,18 +51,6 @@ export default async function HomePage() {
         <HospitalCards snapshots={snapshots} />
       </section>
 
-      {/* Regional overview */}
-      <section>
-        <h3 className="text-xs font-semibold mb-4 text-slate-500 uppercase tracking-widest">
-          Sommaire par région
-        </h3>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3">
-          {regions.map((region) => (
-            <RegionCard key={region.region} region={region} />
-          ))}
-        </div>
-      </section>
-
       {/* Map */}
       <section>
         <div className="flex items-center justify-between mb-4">
@@ -86,6 +74,18 @@ export default async function HomePage() {
         </div>
         <div className="rounded-xl overflow-hidden border border-surface-border" style={{ height: 520 }}>
           <HospitalMapWrapper snapshots={snapshots} />
+        </div>
+      </section>
+
+      {/* Regional overview */}
+      <section>
+        <h3 className="text-xs font-semibold mb-4 text-slate-500 uppercase tracking-widest">
+          Sommaire par région
+        </h3>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3">
+          {regions.map((region) => (
+            <RegionCard key={region.region} region={region} />
+          ))}
         </div>
       </section>
     </div>
