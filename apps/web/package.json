@@ -12,12 +12,11 @@
   "dependencies": {
     "@quebec-urgences/shared": "workspace:*",
     "@supabase/supabase-js": "^2.47.2",
-    "@types/leaflet": "^1.9.21",
-    "leaflet": "^1.9.4",
+    "maplibre-gl": "^5.19.0",
     "next": "^15.1.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-leaflet": "^5.0.0",
+    "react-map-gl": "^8.1.0",
     "recharts": "^2.14.1"
   },
   "devDependencies": {
