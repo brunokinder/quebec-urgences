@@ -16,6 +16,7 @@ export function StatusBadge({ lastIngestion }: Props) {
   const stale = ageMinutes > 90;
 
   const formatted = new Date(lastIngestion.fetched_at).toLocaleString("fr-CA", {
+    timeZone: "America/Toronto",
     hour: "2-digit",
     minute: "2-digit",
     day: "numeric",
