@@ -24,6 +24,7 @@ export function TrendChart({ data }: Props) {
 
   const chartData = data.map((s) => ({
     time: new Date(s.timestamp).toLocaleString("fr-CA", {
+      timeZone: "America/Toronto",
       month: "short",
       day: "numeric",
       hour: "2-digit",
