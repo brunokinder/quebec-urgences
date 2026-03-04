@@ -20,7 +20,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="max-w-7xl mx-auto flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center">
-                <span className="text-lg" aria-hidden>🏥</span>
+                <svg className="w-4 h-4 text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <polyline points="2,12 6,12 7.5,6 10,18 13,9 15,13 16.5,12 22,12" />
+                </svg>
               </div>
               <div>
                 <h1 className="text-base font-bold leading-none text-slate-50 tracking-tight">
