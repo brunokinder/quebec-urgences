@@ -1,9 +1,10 @@
 name: Rollup — Weekly aggregation
 
 on:
-  schedule:
-    # Every Sunday at 02:00 UTC
-    - cron: "0 2 * * 0"
+  # Disabled — schedule removed to prevent DB cleanup/deletion
+  # schedule:
+  #   # Every Sunday at 02:00 UTC
+  #   - cron: "0 2 * * 0"
   workflow_dispatch:
 
 jobs:
