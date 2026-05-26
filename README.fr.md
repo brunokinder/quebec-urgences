@@ -2,7 +2,13 @@
 
 *Français | [English](README.md)*
 
+[![Licence MIT](https://img.shields.io/badge/licence-MIT-blue.svg)](LICENSE)
+[![Données : CC-BY 4.0](https://img.shields.io/badge/données-CC--BY%204.0-green.svg)](https://creativecommons.org/licenses/by/4.0/deed.fr)
+[![IC](https://github.com/brunokinder/quebec-urgences/actions/workflows/ci.yml/badge.svg)](https://github.com/brunokinder/quebec-urgences/actions/workflows/ci.yml)
+
 Tableau de bord open source affichant le **taux d'occupation en temps réel** des urgences du Québec, avec historique horaire et analyse de tendances.
+
+**En ligne :** [quebec-urgences.vercel.app](https://quebec-urgences.vercel.app/)
 
 > Données : MSSS / Console provinciale des urgences (CPU) — Licence **CC-BY 4.0**
 
@@ -152,19 +158,23 @@ Vercel détecte automatiquement Next.js et gère les builds. Les futurs push ver
 
 ## Contribuer
 
-Les contributions sont les bienvenues !
+Les contributions sont les bienvenues ! Consultez [CONTRIBUTING.md](CONTRIBUTING.md) pour les détails.
+
+En résumé :
 
 1. Forker le dépôt
 2. Créer une branche (`git checkout -b feat/ma-fonctionnalite`)
 3. Committer vos changements
-4. Ouvrir une Pull Request
+4. Ouvrir une Pull Request ciblant `main`
+
+Les rapports de bugs et demandes de fonctionnalités via [GitHub Issues](https://github.com/brunokinder/quebec-urgences/issues) sont également appréciés.
 
 ---
 
 ## Source des données
 
 - **Fournisseur :** Ministère de la Santé et des Services sociaux (MSSS)
-- **Données Québec :** [b256f87f...](https://www.donneesquebec.ca/recherche/dataset/performance-du-reseau-hospitalier)
+- **Données Québec :** [Performance du réseau hospitalier](https://www.donneesquebec.ca/recherche/dataset/performance-du-reseau-hospitalier)
 - **Licence :** [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.fr)
 - **Fréquence :** Mise à jour horaire
 
@@ -172,4 +182,4 @@ Les contributions sont les bienvenues !
 
 ## Licence
 
-[MIT](LICENSE) — © 2024 brunokinder
+[MIT](LICENSE) — © 2024–2026 brunokinder

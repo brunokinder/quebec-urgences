@@ -2,7 +2,13 @@
 
 *[Français](README.fr.md) | English*
 
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Data License: CC-BY 4.0](https://img.shields.io/badge/data-CC--BY%204.0-green.svg)](https://creativecommons.org/licenses/by/4.0/)
+[![CI](https://github.com/brunokinder/quebec-urgences/actions/workflows/ci.yml/badge.svg)](https://github.com/brunokinder/quebec-urgences/actions/workflows/ci.yml)
+
 Open source dashboard displaying **real-time occupancy rates** of Quebec emergency rooms, with hourly historical data and trend analysis.
+
+**Live:** [quebec-urgences.vercel.app](https://quebec-urgences.vercel.app/)
 
 > Data: MSSS / Console provinciale des urgences (CPU) — License **CC-BY 4.0**
 
@@ -139,7 +145,7 @@ Next.js Dashboard (Vercel)
 
 ### Vercel (recommended)
 
-1. Go to [vercel.com/new](https://vercel.com/new) and import `brunokinder/quebec-urgences`
+1. Go to [vercel.com/new](https://vercel.com/new) and import `brunokinder/quebec-urgences` (or your fork)
 2. Set **Root Directory** to `apps/web`
 3. Add the following environment variables:
    - `NEXT_PUBLIC_SUPABASE_URL`
@@ -152,19 +158,23 @@ Vercel auto-detects Next.js and handles builds. Future pushes to `main` deploy a
 
 ## Contributing
 
-Contributions are welcome!
+Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to get started.
+
+Quick summary:
 
 1. Fork the repository
 2. Create a branch (`git checkout -b feat/my-feature`)
 3. Commit your changes
-4. Open a Pull Request
+4. Open a Pull Request targeting `main`
+
+Bug reports and feature requests via [GitHub Issues](https://github.com/brunokinder/quebec-urgences/issues) are also appreciated.
 
 ---
 
 ## Data Source
 
 - **Provider:** Ministère de la Santé et des Services sociaux (MSSS)
-- **Données Québec:** [b256f87f...](https://www.donneesquebec.ca/recherche/dataset/performance-du-reseau-hospitalier)
+- **Données Québec:** [Performance du réseau hospitalier](https://www.donneesquebec.ca/recherche/dataset/performance-du-reseau-hospitalier)
 - **License:** [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/)
 - **Frequency:** Hourly updates
 
@@ -172,4 +182,4 @@ Contributions are welcome!
 
 ## License
 
-[MIT](LICENSE) — © 2024 brunokinder
+[MIT](LICENSE) — © 2024–2026 brunokinder
