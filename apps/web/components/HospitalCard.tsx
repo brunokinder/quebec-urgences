@@ -2,6 +2,14 @@ import type { UrgenceSnapshot } from "@quebec-urgences/shared";
 import { CRITICAL_OCCUPATION_THRESHOLD, HIGH_OCCUPATION_THRESHOLD } from "@quebec-urgences/shared";
 import Link from "next/link";
 
+/** Format decimal hours (e.g. 4.03) as "4h 02m" or "4h" if 0 minutes. */
+function formatDuration(hours: number): string {
+  const h = Math.floor(hours);
+  const m = Math.round((hours - h) * 60);
+  if (m === 0) return `${h}h`;
+  return `${h}h ${String(m).padStart(2, "0")}m`;
+}
+
 interface Props {
   snapshot: UrgenceSnapshot;
   distance?: number;
@@ -71,12 +79,20 @@ export function HospitalCard({ snapshot: s, distance }: Props) {
       </div>
 
       {/* Footer stats */}
-      <div className="flex items-center justify-between text-xs text-slate-600">
-        <span>
-          {s.nb_patients_civieres ?? "—"} / {s.nb_civieres ?? "—"} civières
-        </span>
-        {s.nb_patients_civieres_24h != null && (
-          <span>&gt;24h: {s.nb_patients_civieres_24h}</span>
+      <div className="space-y-1.5">
+        <div className="flex items-center justify-between text-xs text-slate-600">
+          <span>
+            {s.nb_patients_civieres ?? "—"} / {s.nb_civieres ?? "—"} civières
+          </span>
+          {s.nb_patients_civieres_24h != null && (
+            <span>&gt;24h: {s.nb_patients_civieres_24h}</span>
+          )}
+        </div>
+        {s.dms_ambulatoire != null && (
+          <div className="flex items-center justify-between text-xs text-slate-500">
+            <span>Attente est.</span>
+            <span className="tabular-nums">{formatDuration(s.dms_ambulatoire)}</span>
+          </div>
         )}
       </div>
     </Link>
