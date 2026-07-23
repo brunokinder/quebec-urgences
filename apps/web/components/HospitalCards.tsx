@@ -166,25 +166,28 @@ export function HospitalCards({ snapshots }: Props) {
               </datalist>
               <input
                 type="text"
+                aria-label="Code postal"
                 value={postalInput}
                 onChange={(e) => setPostalInput(e.target.value)}
                 placeholder="Code postal (ex: H3A)"
                 maxLength={7}
                 list="fsa-list"
-                className="border border-surface-border rounded-lg px-3 py-2 text-sm w-44 bg-surface-subtle text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="border border-surface-border rounded-lg px-3 py-2.5 text-sm w-44 bg-surface-subtle text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
               <button
                 type="submit"
                 disabled={postalLoading || !postalInput}
-                className="text-sm px-3 py-2 rounded-lg bg-surface-subtle border border-surface-border text-slate-300 hover:bg-surface-hover disabled:opacity-50 transition-colors"
+                className="text-sm px-3 py-2.5 rounded-lg bg-surface-subtle border border-surface-border text-slate-300 hover:bg-surface-hover disabled:opacity-50 transition-colors"
               >
                 {postalLoading ? "…" : "OK"}
               </button>
             </form>
 
-            {location.status === "error" && (
-              <p className="text-xs text-red-400">{location.message}</p>
-            )}
+            <div aria-live="polite">
+              {location.status === "error" && (
+                <p className="text-xs text-red-400">{location.message}</p>
+              )}
+            </div>
           </div>
         </div>
       )}
@@ -201,7 +204,7 @@ export function HospitalCards({ snapshots }: Props) {
           </div>
           <button
             onClick={() => { setLocation({ status: "idle" }); setPostalInput(""); }}
-            className="shrink-0 inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-lg border border-surface-border bg-surface-subtle text-slate-400 hover:text-slate-200 hover:border-slate-500 transition-colors"
+            className="shrink-0 inline-flex items-center gap-1.5 text-xs px-3 py-2 rounded-lg border border-surface-border bg-surface-subtle text-slate-400 hover:text-slate-200 hover:border-slate-500 transition-colors"
           >
             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 012.828 2.828L11.828 15.828a2 2 0 01-1.414.586H7v-3.414a2 2 0 01.586-1.414z" />

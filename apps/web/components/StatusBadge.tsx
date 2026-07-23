@@ -35,7 +35,7 @@ export function StatusBadge({ lastIngestion }: Props) {
         <span className={`inline-block w-1.5 h-1.5 rounded-full mr-1.5 align-middle ${stale ? "bg-amber-400" : "bg-emerald-400"}`} />
         {stale ? "Données périmées" : "Données récentes"}
       </span>
-      <p className="text-xs text-slate-600 mt-1">Dernière màj : {formatted}</p>
+      <p className="text-xs text-slate-400 mt-1">Dernière màj : {formatted}</p>
     </div>
   );
 }
