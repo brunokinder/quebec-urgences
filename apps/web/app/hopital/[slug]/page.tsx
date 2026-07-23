@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getLatestSnapshots, getHospitalTrend } from "@/lib/queries";
 import { OccupationBadge } from "@/components/OccupationBadge";
 import { TrendChart } from "@/components/TrendChart";
+import { formatHospitalName } from "@/lib/formatHospitalName";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -31,7 +32,7 @@ export default async function HospitalPage({ params }: Props) {
           ← Retour au tableau de bord
         </a>
         <h2 className="text-2xl font-bold mt-3 text-slate-50 tracking-tight leading-tight">
-          {current.nom_installation}
+          {formatHospitalName(current.nom_installation)}
         </h2>
         <p className="text-slate-500 mt-1">{current.region}</p>
       </div>
