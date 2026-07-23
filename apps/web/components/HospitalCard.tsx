@@ -1,6 +1,7 @@
 import type { UrgenceSnapshot } from "@quebec-urgences/shared";
 import { CRITICAL_OCCUPATION_THRESHOLD, HIGH_OCCUPATION_THRESHOLD } from "@quebec-urgences/shared";
 import Link from "next/link";
+import { formatHospitalName } from "../lib/formatHospitalName";
 
 /** Format decimal hours (e.g. 4.03) as "4h 02m" or "4h" if 0 minutes. */
 function formatDuration(hours: number): string {
@@ -61,9 +62,9 @@ export function HospitalCard({ snapshot: s, distance }: Props) {
       {/* Name + region */}
       <div>
         <p className="text-sm font-medium text-slate-200 leading-snug line-clamp-2 group-hover:text-white transition-colors">
-          {s.nom_installation}
+          {formatHospitalName(s.nom_installation)}
         </p>
-        <p className="text-xs text-slate-600 mt-0.5 uppercase tracking-wide">{s.region}</p>
+        <p className="text-xs text-slate-600 mt-0.5 tracking-wide">{s.region}</p>
       </div>
 
       {/* Occupation rate + status badge + wait time */}

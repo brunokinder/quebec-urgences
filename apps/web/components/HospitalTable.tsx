@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import type { UrgenceSnapshot } from "@quebec-urgences/shared";
 import { OccupationBadge } from "./OccupationBadge";
 import Link from "next/link";
+import { formatHospitalName } from "../lib/formatHospitalName";
 
 interface Props {
   snapshots: UrgenceSnapshot[];
@@ -111,7 +112,7 @@ export function HospitalTable({ snapshots }: Props) {
                     href={`/hopital/${encodeURIComponent(s.nom_installation)}`}
                     className="text-blue-400 hover:text-blue-300 hover:underline transition-colors text-xs sm:text-sm leading-tight"
                   >
-                    {s.nom_installation}
+                    {formatHospitalName(s.nom_installation)}
                   </Link>
                 </td>
                 <td className="px-4 py-2.5 text-slate-500 text-xs hidden md:table-cell">

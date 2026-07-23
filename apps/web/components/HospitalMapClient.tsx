@@ -9,6 +9,7 @@ import {
   HIGH_OCCUPATION_THRESHOLD,
 } from "@quebec-urgences/shared";
 import { getHospitalCoords } from "@/lib/hospitalCoordinates";
+import { formatHospitalName } from "@/lib/formatHospitalName";
 import Link from "next/link";
 
 const QUEBEC_CITY: [number, number] = [46.8139, -71.208];
@@ -83,7 +84,7 @@ export default function HospitalMapClient({ snapshots }: Props) {
             <Popup>
               <div style={{ minWidth: 180 }}>
                 <p style={{ fontWeight: 700, fontSize: 13, marginBottom: 2 }}>
-                  {s.nom_installation}
+                  {formatHospitalName(s.nom_installation)}
                 </p>
                 <p style={{ color: "#6b7280", fontSize: 12, marginBottom: 6 }}>
                   {s.region}
