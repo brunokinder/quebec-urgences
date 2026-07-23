@@ -64,7 +64,7 @@ export function HospitalCard({ snapshot: s, distance }: Props) {
         <p className="text-sm font-medium text-slate-200 leading-snug line-clamp-2 group-hover:text-white transition-colors">
           {formatHospitalName(s.nom_installation)}
         </p>
-        <p className="text-xs text-slate-600 mt-0.5 tracking-wide">{s.region}</p>
+        <p className="text-xs text-slate-400 mt-0.5 tracking-wide">{s.region}</p>
       </div>
 
       {/* Occupation rate + status badge + wait time */}
@@ -94,7 +94,7 @@ export function HospitalCard({ snapshot: s, distance }: Props) {
 
       {/* Footer stats */}
       <div className="space-y-1.5">
-        <div className="flex items-center justify-between text-xs text-slate-600">
+        <div className="flex items-center justify-between text-xs text-slate-400">
           <span>
             {s.nb_patients_civieres ?? "—"} / {s.nb_civieres ?? "—"} civières
           </span>

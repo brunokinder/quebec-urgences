@@ -40,11 +40,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <main className="max-w-7xl mx-auto px-4 py-6">{children}</main>
 
-        <footer className="mt-12 border-t border-surface-border py-5 text-center text-xs text-slate-600">
+        <footer className="mt-12 border-t border-surface-border py-5 text-center text-xs text-slate-400">
           Données: MSSS / Console provinciale des urgences — Licence CC-BY 4.0 —{" "}
           <a
             href="https://github.com/brunokinder/quebec-urgences"
-            className="text-slate-500 hover:text-slate-300 underline transition-colors"
+            className="text-slate-400 hover:text-slate-300 underline transition-colors"
             target="_blank"
             rel="noopener noreferrer"
           >
