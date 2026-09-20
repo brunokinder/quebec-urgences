@@ -44,9 +44,9 @@ export default async function HospitalPage({ params }: Props) {
         <Metric label="> 24h" value={current.nb_patients_civieres_24h ?? "—"} />
         <Metric label="> 48h" value={current.nb_patients_civieres_48h ?? "—"} />
         <Metric label="Présences" value={current.nb_personnes_presentes ?? "—"} />
-        <Metric label="En cours d'éval." value={current.nb_pec ?? "—"} />
-        <Metric label="DMS ambulatoire" value={current.dms_ambulatoire != null ? `${current.dms_ambulatoire}h` : "—"} />
-        <Metric label="DMS civières" value={current.dms_civieres != null ? `${current.dms_civieres}h` : "—"} />
+        <Metric label="En attente de prise en charge" value={current.nb_pec ?? "—"} />
+        <Metric label="Séjour moyen (ambulatoire)" value={current.dms_ambulatoire != null ? `${current.dms_ambulatoire}h` : "—"} />
+        <Metric label="Séjour moyen (civières)" value={current.dms_civieres != null ? `${current.dms_civieres}h` : "—"} />
       </div>
 
       {/* Trend chart */}
@@ -56,6 +56,11 @@ export default async function HospitalPage({ params }: Props) {
         </h3>
         <TrendChart data={trend} />
       </div>
+
+      <p className="text-xs leading-relaxed text-slate-500">
+        Le nombre de personnes en attente est un portrait en direct. Le temps avant de voir un médecin
+        dépend de la priorité attribuée au triage et n&apos;est pas fourni par le relevé horaire.
+      </p>
     </div>
   );
 }

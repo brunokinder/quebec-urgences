@@ -11,12 +11,6 @@ function formatDuration(hours: number): string {
   return `${h}h ${String(m).padStart(2, "0")}m`;
 }
 
-function waitClasses(hours: number): string {
-  if (hours >= 4) return "bg-red-500/10 text-red-400 border border-red-500/20";
-  if (hours >= 2) return "bg-amber-400/10 text-amber-400 border border-amber-500/20";
-  return "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
-}
-
 interface Props {
   snapshot: UrgenceSnapshot;
   distance?: number;
@@ -67,17 +61,12 @@ export function HospitalCard({ snapshot: s, distance }: Props) {
         <p className="text-xs text-slate-400 mt-0.5 tracking-wide">{s.region}</p>
       </div>
 
-      {/* Occupation rate + status badge + wait time */}
+      {/* Occupation rate + status */}
       <div className="flex items-end justify-between gap-2">
         <span className={`text-3xl font-bold tabular-nums ${rateColor}`}>
           {rate != null ? `${rate.toFixed(0)}%` : "—"}
         </span>
         <div className="flex items-center gap-1.5 flex-wrap justify-end">
-          {s.dms_ambulatoire != null && (
-            <span className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${waitClasses(s.dms_ambulatoire)}`}>
-              ⏱ {formatDuration(s.dms_ambulatoire)}
-            </span>
-          )}
           <span className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${statusClasses}`}>
             {statusLabel}
           </span>
@@ -102,6 +91,18 @@ export function HospitalCard({ snapshot: s, distance }: Props) {
             <span>&gt;24h: {s.nb_patients_civieres_24h}</span>
           )}
         </div>
+        <div className="flex items-center justify-between text-xs text-slate-500">
+          <span>En attente de prise en charge</span>
+          <span className="tabular-nums text-slate-300">
+            {s.nb_pec ?? "—"} patient{s.nb_pec === 1 ? "" : "s"}
+          </span>
+        </div>
+        {s.dms_ambulatoire != null && (
+          <div className="flex items-center justify-between text-xs text-slate-500">
+            <span>Séjour moyen (ambulatoire)</span>
+            <span className="tabular-nums text-slate-300">{formatDuration(s.dms_ambulatoire)}</span>
+          </div>
+        )}
       </div>
     </Link>
   );

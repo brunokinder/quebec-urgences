@@ -3,6 +3,7 @@ import { RegionCard } from "@/components/RegionCard";
 import { HospitalCards } from "@/components/HospitalCards";
 import { StatusBadge } from "@/components/StatusBadge";
 import HospitalMapWrapper from "@/components/HospitalMapWrapper";
+import { OfficialPerformancePanel } from "@/components/OfficialPerformancePanel";
 
 export const dynamic = "force-dynamic";
 
@@ -50,6 +51,8 @@ export default async function HomePage() {
       <section>
         <HospitalCards snapshots={snapshots} />
       </section>
+
+      <OfficialPerformancePanel />
 
       {/* Regional overview */}
       <section>
