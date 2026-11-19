@@ -1,9 +1,23 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { PwaSupport } from "@/components/PwaSupport";
+
+export const viewport: Viewport = {
+  themeColor: "#0d1117",
+};
 
 export const metadata: Metadata = {
   title: "Urgences Québec",
   description: "Taux d'occupation des urgences du Québec, mis à jour chaque heure",
+  applicationName: "Urgences Québec",
+  appleWebApp: {
+    capable: true,
+    title: "Urgences QC",
+    statusBarStyle: "black",
+  },
+  icons: {
+    apple: "/icons/apple-touch-icon.png",
+  },
   openGraph: {
     title: "Urgences Québec",
     description: "Taux d'occupation des urgences du Québec, mis à jour chaque heure",
@@ -34,6 +48,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <span className="text-xs text-slate-400 hidden sm:block">Mis à jour chaque heure</span>
           </div>
         </header>
+
+        <PwaSupport />
 
         <div role="note" className="bg-red-950/40 border-b border-red-900/50 px-4 py-2">
           <p className="max-w-7xl mx-auto text-xs sm:text-sm text-slate-200">
