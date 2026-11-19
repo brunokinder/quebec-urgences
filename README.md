@@ -6,7 +6,7 @@
 [![Data License: CC-BY 4.0](https://img.shields.io/badge/data-CC--BY%204.0-green.svg)](https://creativecommons.org/licenses/by/4.0/)
 [![CI](https://github.com/brunokinder/quebec-urgences/actions/workflows/ci.yml/badge.svg)](https://github.com/brunokinder/quebec-urgences/actions/workflows/ci.yml)
 
-Open source dashboard displaying **real-time occupancy rates** of Quebec emergency rooms, with hourly historical data and trend analysis.
+Open source dashboard displaying the **occupancy rates** of Quebec emergency rooms, **updated every hour**, with historical data and trend analysis.
 
 **Live:** [quebec-urgences.vercel.app](https://quebec-urgences.vercel.app/)
 

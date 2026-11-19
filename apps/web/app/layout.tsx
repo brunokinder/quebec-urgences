@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Link from "next/link";
 import "./globals.css";
 import { PwaSupport } from "@/components/PwaSupport";
 
@@ -6,9 +7,17 @@ export const viewport: Viewport = {
   themeColor: "#0d1117",
 };
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://quebec-urgences.vercel.app";
+const SHARE_DESCRIPTION =
+  "Taux d'occupation des ~200 urgences du Québec, mis à jour chaque heure, avec tendances et heures habituellement plus calmes. Données ouvertes du MSSS, code open source.";
+
 export const metadata: Metadata = {
-  title: "Urgences Québec",
-  description: "Taux d'occupation des urgences du Québec, mis à jour chaque heure",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Urgences Québec",
+    template: "%s · Urgences Québec",
+  },
+  description: SHARE_DESCRIPTION,
   applicationName: "Urgences Québec",
   appleWebApp: {
     capable: true,
@@ -20,9 +29,15 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Urgences Québec",
-    description: "Taux d'occupation des urgences du Québec, mis à jour chaque heure",
+    description: SHARE_DESCRIPTION,
+    siteName: "Urgences Québec",
     locale: "fr_CA",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Urgences Québec",
+    description: SHARE_DESCRIPTION,
   },
 };
 
@@ -64,6 +79,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <footer className="mt-12 border-t border-surface-border py-5 text-center text-xs text-slate-400">
           Données: MSSS / Console provinciale des urgences — Licence CC-BY 4.0 —{" "}
+          <Link href="/a-propos" className="text-slate-400 hover:text-slate-300 underline transition-colors">
+            À propos
+          </Link>{" "}
+          —{" "}
           <a
             href="https://github.com/brunokinder/quebec-urgences"
             className="text-slate-400 hover:text-slate-300 underline transition-colors"

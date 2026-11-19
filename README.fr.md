@@ -6,7 +6,7 @@
 [![Données : CC-BY 4.0](https://img.shields.io/badge/données-CC--BY%204.0-green.svg)](https://creativecommons.org/licenses/by/4.0/deed.fr)
 [![IC](https://github.com/brunokinder/quebec-urgences/actions/workflows/ci.yml/badge.svg)](https://github.com/brunokinder/quebec-urgences/actions/workflows/ci.yml)
 
-Tableau de bord open source affichant le **taux d'occupation en temps réel** des urgences du Québec, avec historique horaire et analyse de tendances.
+Tableau de bord open source affichant le **taux d'occupation** des urgences du Québec, **mis à jour chaque heure**, avec historique et analyse de tendances.
 
 **En ligne :** [quebec-urgences.vercel.app](https://quebec-urgences.vercel.app/)
 
