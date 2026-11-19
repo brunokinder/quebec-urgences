@@ -54,7 +54,7 @@ export function HospitalTable({ snapshots }: Props) {
   }
 
   const thClass =
-    "px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider cursor-pointer hover:text-slate-300 select-none whitespace-nowrap transition-colors";
+    "px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider cursor-pointer hover:text-slate-300 select-none whitespace-nowrap transition-colors";
 
   return (
     <div className="space-y-3">
@@ -65,7 +65,7 @@ export function HospitalTable({ snapshots }: Props) {
           placeholder="Rechercher un établissement…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="bg-surface-card border border-surface-border rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-600 flex-1 min-w-48 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+          className="bg-surface-card border border-surface-border rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 flex-1 min-w-48 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors"
         />
         <select
           value={region}
@@ -80,7 +80,7 @@ export function HospitalTable({ snapshots }: Props) {
         </select>
       </div>
 
-      <p className="text-xs text-slate-600">{filtered.length} résultats</p>
+      <p className="text-xs text-slate-400">{filtered.length} résultats</p>
 
       {/* Table */}
       <div className="overflow-x-auto rounded-xl border border-surface-border">
@@ -99,7 +99,7 @@ export function HospitalTable({ snapshots }: Props) {
               <th className={`${thClass} hidden sm:table-cell`} onClick={() => toggleSort("nb_patients_civieres")}>
                 Pts / Civ. <SortIcon col="nb_patients_civieres" />
               </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider hidden lg:table-cell whitespace-nowrap">
+              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider hidden lg:table-cell whitespace-nowrap">
                 &gt;24h / &gt;48h
               </th>
             </tr>
@@ -115,7 +115,7 @@ export function HospitalTable({ snapshots }: Props) {
                     {formatHospitalName(s.nom_installation)}
                   </Link>
                 </td>
-                <td className="px-4 py-2.5 text-slate-500 text-xs hidden md:table-cell">
+                <td className="px-4 py-2.5 text-slate-400 text-xs hidden md:table-cell">
                   {s.region}
                 </td>
                 <td className="px-4 py-2.5">
@@ -124,7 +124,7 @@ export function HospitalTable({ snapshots }: Props) {
                 <td className="px-4 py-2.5 text-slate-400 tabular-nums text-xs hidden sm:table-cell">
                   {s.nb_patients_civieres ?? "—"} / {s.nb_civieres ?? "—"}
                 </td>
-                <td className="px-4 py-2.5 text-slate-500 tabular-nums text-xs hidden lg:table-cell">
+                <td className="px-4 py-2.5 text-slate-400 tabular-nums text-xs hidden lg:table-cell">
                   {s.nb_patients_civieres_24h ?? "—"} / {s.nb_patients_civieres_48h ?? "—"}
                 </td>
               </tr>

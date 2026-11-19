@@ -14,7 +14,7 @@ export function RegionCard({ region }: Props) {
   const missing = region.hospital_count - region.reporting_count;
 
   const barColor = isCritical ? "bg-red-500" : isHigh ? "bg-amber-400" : isUnknown ? "bg-slate-600" : "bg-emerald-500";
-  const rateColor = isCritical ? "text-red-400" : isHigh ? "text-amber-400" : isUnknown ? "text-slate-500" : "text-emerald-400";
+  const rateColor = isCritical ? "text-red-400" : isHigh ? "text-amber-400" : isUnknown ? "text-slate-400" : "text-emerald-400";
   const cardBorder = isCritical
     ? "border-red-500/20 shadow-red-500/5"
     : isHigh
@@ -31,7 +31,7 @@ export function RegionCard({ region }: Props) {
         <span className={`text-3xl font-bold tabular-nums ${rateColor}`}>
           {rate != null ? `${rate.toFixed(0)}%` : "—"}
         </span>
-        <span className="text-xs text-slate-600 mb-1">{region.hospital_count} inst.</span>
+        <span className="text-xs text-slate-400 mb-1">{region.hospital_count} inst.</span>
       </div>
 
       {/* Progress bar */}
@@ -43,7 +43,7 @@ export function RegionCard({ region }: Props) {
       </div>
 
       {missing > 0 && (
-        <p className="text-xs text-slate-500">{missing} inst. sans données récentes</p>
+        <p className="text-xs text-slate-400">{missing} inst. sans données récentes</p>
       )}
 
       {region.hospitals_over_100 > 0 && (

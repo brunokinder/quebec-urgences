@@ -6,7 +6,7 @@ interface Props {
 }
 
 export function OccupationBadge({ rate, size = "md" }: Props) {
-  if (rate == null) return <span className="text-slate-600">—</span>;
+  if (rate == null) return <span className="text-slate-400">—</span>;
 
   const color =
     rate >= CRITICAL_OCCUPATION_THRESHOLD

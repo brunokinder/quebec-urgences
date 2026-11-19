@@ -3,10 +3,10 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Urgences Québec",
-  description: "Taux d'occupation en temps réel des urgences du Québec",
+  description: "Taux d'occupation des urgences du Québec, mis à jour chaque heure",
   openGraph: {
     title: "Urgences Québec",
-    description: "Taux d'occupation en temps réel des urgences du Québec",
+    description: "Taux d'occupation des urgences du Québec, mis à jour chaque heure",
     locale: "fr_CA",
     type: "website",
   },
@@ -28,15 +28,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <h1 className="text-base font-bold leading-none text-slate-50 tracking-tight">
                   Urgences Québec
                 </h1>
-                <p className="text-xs text-slate-500 mt-0.5">Taux d&apos;occupation — données MSSS</p>
+                <p className="text-xs text-slate-400 mt-0.5">Taux d&apos;occupation — données MSSS</p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-xs text-slate-500 hidden sm:block">Temps réel</span>
-            </div>
+            <span className="text-xs text-slate-400 hidden sm:block">Mis à jour chaque heure</span>
           </div>
         </header>
+
+        <div role="note" className="bg-red-950/40 border-b border-red-900/50 px-4 py-2">
+          <p className="max-w-7xl mx-auto text-xs sm:text-sm text-slate-200">
+            <strong className="text-red-300">Urgence vitale : composez le 911.</strong>{" "}
+            Besoin d&apos;un conseil santé : Info-Santé{" "}
+            <a href="tel:811" className="font-semibold underline hover:text-white">811</a>.{" "}
+            <span className="text-slate-300">Ne retardez jamais une visite à cause de ces chiffres.</span>
+          </p>
+        </div>
 
         <main className="max-w-7xl mx-auto px-4 py-6">{children}</main>
 

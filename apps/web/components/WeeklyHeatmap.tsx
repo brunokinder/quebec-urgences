@@ -37,7 +37,7 @@ export function WeeklyHeatmap({ profile, now }: Props) {
     <div className="space-y-3">
       {/* The grid scrolls inside its card on narrow screens; the page itself never does. */}
       <div className="overflow-x-auto -mx-1 px-1">
-        <table className="border-separate border-spacing-[2px] text-[10px] text-slate-500 min-w-[560px] w-full">
+        <table className="border-separate border-spacing-[2px] text-[10px] text-slate-400 min-w-[560px] w-full">
           <caption className="sr-only">
             Taux d&apos;occupation médian par jour et par heure, {PROFILE_WEEKS} dernières semaines
           </caption>
@@ -80,7 +80,7 @@ export function WeeklyHeatmap({ profile, now }: Props) {
         </table>
       </div>
 
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-400">
         {LEGEND.map((l) => (
           <span key={l.label} className="flex items-center gap-1.5">
             <span className={`w-3 h-3 rounded-sm ${l.cls}`} />
@@ -92,7 +92,7 @@ export function WeeklyHeatmap({ profile, now }: Props) {
           maintenant
         </span>
       </div>
-      <p className="text-xs text-slate-500">
+      <p className="text-xs text-slate-400">
         Médiane des relevés horaires des {PROFILE_WEEKS} dernières semaines (case grise : moins de{" "}
         {PROFILE_MIN_SAMPLES} relevés).
       </p>

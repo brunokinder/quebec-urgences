@@ -152,7 +152,7 @@ export function HospitalCards({ snapshots, trends = {} }: Props) {
             <p className="text-base font-semibold text-slate-200">
               Trouvez l&apos;urgence la moins achalandée près de chez vous
             </p>
-            <p className="text-sm text-slate-500 mt-0.5">
+            <p className="text-sm text-slate-400 mt-0.5">
               Activez la localisation ou entrez votre code postal pour trier par proximité
             </p>
           </div>
@@ -166,7 +166,7 @@ export function HospitalCards({ snapshots, trends = {} }: Props) {
               {location.status === "loading" ? "Détection…" : "Détecter ma position"}
             </button>
 
-            <span className="text-xs text-slate-600">ou</span>
+            <span className="text-xs text-slate-400">ou</span>
 
             <form onSubmit={handlePostalSubmit} className="flex gap-1.5">
               <datalist id="fsa-list">
@@ -182,7 +182,7 @@ export function HospitalCards({ snapshots, trends = {} }: Props) {
                 placeholder="Code postal (ex: H3A)"
                 maxLength={7}
                 list="fsa-list"
-                className="border border-surface-border rounded-lg px-3 py-2.5 text-sm w-44 bg-surface-subtle text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="border border-surface-border rounded-lg px-3 py-2.5 text-sm w-44 bg-surface-subtle text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
               <button
                 type="submit"
@@ -210,7 +210,7 @@ export function HospitalCards({ snapshots, trends = {} }: Props) {
             <span className="text-emerald-400 font-medium truncate">
               {(location as Extract<LocationState, { status: "detected" }>).label}
             </span>
-            <span className="text-slate-600 shrink-0">· trié par proximité</span>
+            <span className="text-slate-400 shrink-0">· trié par proximité</span>
           </div>
           <button
             onClick={() => { setLocation({ status: "idle" }); setPostalInput(""); }}
@@ -227,7 +227,7 @@ export function HospitalCards({ snapshots, trends = {} }: Props) {
       {/* Hospital grid */}
       <section className="space-y-3">
         <div className="flex items-center justify-between gap-3">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest">
+          <p className="text-sm font-semibold text-slate-200">
             {locationKnown ? "Meilleures options près de vous" : "Toutes les urgences · par disponibilité"}
           </p>
           <input
@@ -235,7 +235,7 @@ export function HospitalCards({ snapshots, trends = {} }: Props) {
             placeholder="Rechercher…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="border border-surface-border rounded-lg px-3 py-1.5 text-sm w-40 bg-surface-card text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-slate-500"
+            className="border border-surface-border rounded-lg px-3 py-1.5 text-sm w-40 bg-surface-card text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
           />
         </div>
 
@@ -249,7 +249,7 @@ export function HospitalCards({ snapshots, trends = {} }: Props) {
             />
           ))}
           {visible.length === 0 && (
-            <p className="text-sm text-slate-500 col-span-full py-6 text-center">
+            <p className="text-sm text-slate-400 col-span-full py-6 text-center">
               Aucun résultat pour «&nbsp;{search}&nbsp;»
             </p>
           )}

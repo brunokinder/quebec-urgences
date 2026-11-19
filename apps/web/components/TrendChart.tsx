@@ -19,7 +19,7 @@ interface Props {
 
 export function TrendChart({ data }: Props) {
   if (data.length === 0) {
-    return <p className="text-sm text-slate-500 italic">Aucune donnée disponible.</p>;
+    return <p className="text-sm text-slate-400 italic">Aucune donnée disponible.</p>;
   }
 
   const chartData = data.map((s) => ({

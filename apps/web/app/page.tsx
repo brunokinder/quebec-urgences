@@ -25,15 +25,15 @@ export default async function HomePage() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-slate-50 tracking-tight">Urgences Québec</h2>
-          <p className="text-sm text-slate-500 mt-1">
+          <h2 className="text-2xl font-bold text-slate-50 tracking-tight">Achalandage actuel des urgences</h2>
+          <p className="text-sm text-slate-400 mt-1">
             {snapshots.length} installations · données mises à jour chaque heure
           </p>
           {/* Quick stats */}
           <div className="flex items-center gap-4 mt-3">
             {criticalCount > 0 && (
               <span className="flex items-center gap-1.5 text-xs text-red-400 font-medium">
-                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                <span className="w-2 h-2 rounded-full bg-red-500" />
                 {criticalCount} inst. critiques (&gt;100%)
               </span>
             )}
@@ -57,7 +57,7 @@ export default async function HomePage() {
 
       {/* Regional overview */}
       <section>
-        <h3 className="text-xs font-semibold mb-4 text-slate-500 uppercase tracking-widest">
+        <h3 className="text-sm font-semibold mb-4 text-slate-200">
           Sommaire par région
         </h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3">
@@ -70,10 +70,10 @@ export default async function HomePage() {
       {/* Map */}
       <section>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-widest">
+          <h3 className="text-sm font-semibold text-slate-200">
             Carte des urgences
           </h3>
-          <div className="flex items-center gap-4 text-xs text-slate-600">
+          <div className="flex items-center gap-4 text-xs text-slate-400">
             <span className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 opacity-80" />
               &lt; 80%
