@@ -50,14 +50,14 @@ export default async function HospitalPage({ params }: Props) {
       <div>
         <a
           href="/"
-          className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-300 transition-colors"
+          className="inline-flex items-center gap-1 text-sm text-slate-400 hover:text-slate-300 transition-colors"
         >
           ← Retour au tableau de bord
         </a>
         <h2 className="text-2xl font-bold mt-3 text-slate-50 tracking-tight leading-tight">
           {formatHospitalName(current.nom_installation)}
         </h2>
-        <p className="text-slate-500 mt-1">{current.region}</p>
+        <p className="text-slate-400 mt-1">{current.region}</p>
         {current.is_stale && (
           <p className="mt-3 rounded-lg border border-amber-500/20 bg-amber-500/5 px-3 py-2 text-sm text-amber-300">
             Cette installation ne transmet plus de données. Dernier relevé :{" "}
@@ -86,7 +86,7 @@ export default async function HospitalPage({ params }: Props) {
       {/* Better or worse? — trend + comparison with the usual level */}
       {live && (recentTrend || usual) && (
         <div className="bg-surface-card rounded-xl border border-surface-border p-5 space-y-2">
-          <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">
+          <h3 className="text-sm font-semibold text-slate-200 mb-2">
             Tendance
           </h3>
           <TrendBadge trend={recentTrend} variant="full" />
@@ -113,7 +113,7 @@ export default async function HospitalPage({ params }: Props) {
 
       {/* Trend chart */}
       <div className="bg-surface-card rounded-xl border border-surface-border p-5">
-        <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-4">
+        <h3 className="text-sm font-semibold text-slate-200 mb-4">
           Taux d&apos;occupation — 7 derniers jours
         </h3>
         <TrendChart data={trend} />
@@ -122,7 +122,7 @@ export default async function HospitalPage({ params }: Props) {
       {/* Usual week — heat map */}
       {profile.size > 0 && (
         <div className="bg-surface-card rounded-xl border border-surface-border p-5 space-y-4">
-          <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-widest">
+          <h3 className="text-sm font-semibold text-slate-200">
             Achalandage habituel par heure
           </h3>
           {calmToday.length > 0 && (
@@ -139,7 +139,7 @@ export default async function HospitalPage({ params }: Props) {
         </div>
       )}
 
-      <p className="text-xs leading-relaxed text-slate-500">
+      <p className="text-xs leading-relaxed text-slate-400">
         Le nombre de personnes en attente est un portrait en direct. Le temps avant de voir un médecin
         dépend de la priorité attribuée au triage et n&apos;est pas fourni par le relevé horaire.
       </p>
@@ -158,7 +158,7 @@ function Metric({
 }) {
   return (
     <div className={`bg-surface-card rounded-xl border p-4 ${highlight ? "border-surface-border" : "border-surface-border"}`}>
-      <p className="text-xs text-slate-500 mb-2 uppercase tracking-wide font-medium">{label}</p>
+      <p className="text-xs text-slate-400 mb-2 uppercase tracking-wide font-medium">{label}</p>
       <div className="text-lg font-semibold text-slate-100">{value}</div>
     </div>
   );

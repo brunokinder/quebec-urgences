@@ -5,7 +5,7 @@ interface Props {
 export function StatusBadge({ lastIngestion }: Props) {
   if (!lastIngestion) {
     return (
-      <span className="text-xs text-slate-500 bg-surface-subtle px-2 py-1 rounded-full border border-surface-border">
+      <span className="text-xs text-slate-400 bg-surface-subtle px-2 py-1 rounded-full border border-surface-border">
         Aucune ingestion
       </span>
     );

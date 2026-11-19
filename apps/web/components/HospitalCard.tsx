@@ -27,7 +27,7 @@ export function HospitalCard({ snapshot: s, distance, trend }: Props) {
   const isUnknown = level === "unknown";
 
   const barColor = isCritical ? "bg-red-500" : isHigh ? "bg-amber-400" : isUnknown ? "bg-slate-600" : "bg-emerald-500";
-  const rateColor = isCritical ? "text-red-400" : isHigh ? "text-amber-400" : isUnknown ? "text-slate-500" : "text-emerald-400";
+  const rateColor = isCritical ? "text-red-400" : isHigh ? "text-amber-400" : isUnknown ? "text-slate-400" : "text-emerald-400";
 
   const statusLabel = s.is_stale
     ? "Données périmées"
@@ -68,7 +68,7 @@ export function HospitalCard({ snapshot: s, distance, trend }: Props) {
       {/* Distance */}
       {distance != null && (
         <div className="flex justify-end">
-          <span className="text-xs text-slate-500 tabular-nums">
+          <span className="text-xs text-slate-400 tabular-nums">
             {distance < 1
               ? `${Math.round(distance * 1000)} m`
               : `${distance.toFixed(0)} km`}
@@ -119,14 +119,14 @@ export function HospitalCard({ snapshot: s, distance, trend }: Props) {
             <span>&gt;24h: {s.nb_patients_civieres_24h}</span>
           )}
         </div>
-        <div className="flex items-center justify-between text-xs text-slate-500">
+        <div className="flex items-center justify-between text-xs text-slate-400">
           <span>En attente de prise en charge</span>
           <span className="tabular-nums text-slate-300">
             {s.nb_pec ?? "—"} patient{s.nb_pec === 1 ? "" : "s"}
           </span>
         </div>
         {s.dms_ambulatoire != null && (
-          <div className="flex items-center justify-between text-xs text-slate-500">
+          <div className="flex items-center justify-between text-xs text-slate-400">
             <span>Séjour moyen (ambulatoire)</span>
             <span className="tabular-nums text-slate-300">{formatDuration(s.dms_ambulatoire)}</span>
           </div>

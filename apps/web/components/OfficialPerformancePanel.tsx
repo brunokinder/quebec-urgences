@@ -25,7 +25,7 @@ export function OfficialPerformancePanel() {
     <section className="rounded-xl border border-surface-border bg-surface-card p-5 space-y-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-widest">
+          <h3 className="text-sm font-semibold text-slate-200">
             Délais officiels après le triage
           </h3>
           <p className="mt-1 text-sm text-slate-400">
@@ -51,7 +51,7 @@ export function OfficialPerformancePanel() {
         ))}
       </div>
 
-      <p className="text-xs leading-relaxed text-slate-500">
+      <p className="text-xs leading-relaxed text-slate-400">
         Ces moyennes dépendent de la priorité de triage; elles ne prédisent pas l&apos;attente d&apos;une personne donnée.
       </p>
     </section>
