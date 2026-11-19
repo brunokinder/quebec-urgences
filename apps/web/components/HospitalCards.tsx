@@ -182,7 +182,7 @@ export function HospitalCards({ snapshots, trends = {} }: Props) {
                 placeholder="Code postal (ex: H3A)"
                 maxLength={7}
                 list="fsa-list"
-                className="border border-surface-border rounded-lg px-3 py-2.5 text-sm w-44 bg-surface-subtle text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="border border-surface-border rounded-lg px-3 py-2.5 text-sm w-44 bg-surface-subtle text-slate-200 placeholder-slate-500 focus:outline-hidden focus:ring-1 focus:ring-blue-500"
               />
               <button
                 type="submit"
@@ -235,7 +235,7 @@ export function HospitalCards({ snapshots, trends = {} }: Props) {
             placeholder="Rechercher…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="border border-surface-border rounded-lg px-3 py-1.5 text-sm w-40 bg-surface-card text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+            className="border border-surface-border rounded-lg px-3 py-1.5 text-sm w-40 bg-surface-card text-slate-200 placeholder-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-500"
           />
         </div>
 

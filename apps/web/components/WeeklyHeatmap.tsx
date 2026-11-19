@@ -68,7 +68,7 @@ export function WeeklyHeatmap({ profile, now }: Props) {
                       key={h}
                       title={label}
                       aria-label={label}
-                      className={`h-5 rounded-sm ${cell ? cellClass(cell.median_taux) : "bg-surface-subtle"} ${
+                      className={`h-5 rounded-xs ${cell ? cellClass(cell.median_taux) : "bg-surface-subtle"} ${
                         isNow ? "ring-2 ring-blue-400" : ""
                       }`}
                     />
@@ -83,12 +83,12 @@ export function WeeklyHeatmap({ profile, now }: Props) {
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-400">
         {LEGEND.map((l) => (
           <span key={l.label} className="flex items-center gap-1.5">
-            <span className={`w-3 h-3 rounded-sm ${l.cls}`} />
+            <span className={`w-3 h-3 rounded-xs ${l.cls}`} />
             {l.label}
           </span>
         ))}
         <span className="flex items-center gap-1.5">
-          <span className="w-3 h-3 rounded-sm ring-2 ring-blue-400" />
+          <span className="w-3 h-3 rounded-xs ring-2 ring-blue-400" />
           maintenant
         </span>
       </div>

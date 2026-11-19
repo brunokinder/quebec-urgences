@@ -1,6 +1,20 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-surface: #0d1117;
+  --color-surface-card: #161b22;
+  --color-surface-hover: #1c2128;
+  --color-surface-border: #30363d;
+  --color-surface-subtle: #21262d;
+}
+
+/* Tailwind v4 resets buttons to cursor: default; keep the v3 pointer. */
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
 
 /* Dark scrollbar */
 ::-webkit-scrollbar {

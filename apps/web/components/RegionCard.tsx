@@ -22,7 +22,7 @@ export function RegionCard({ region }: Props) {
     : "border-surface-border";
 
   return (
-    <div className={`bg-surface-card rounded-xl border ${cardBorder} p-4 space-y-3 shadow-sm hover:border-slate-600 transition-colors`}>
+    <div className={`bg-surface-card rounded-xl border ${cardBorder} p-4 space-y-3 shadow-xs hover:border-slate-600 transition-colors`}>
       <p className="text-xs font-medium text-slate-400 leading-tight line-clamp-2 tracking-wide">
         {region.region}
       </p>
