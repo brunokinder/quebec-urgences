@@ -1,5 +1,5 @@
 import type { UrgenceSnapshot } from "@quebec-urgences/shared";
-import { CRITICAL_OCCUPATION_THRESHOLD, HIGH_OCCUPATION_THRESHOLD } from "@quebec-urgences/shared";
+import { occupationLevel } from "@quebec-urgences/shared";
 import Link from "next/link";
 import { formatHospitalName } from "../lib/formatHospitalName";
 
@@ -18,18 +18,39 @@ interface Props {
 
 export function HospitalCard({ snapshot: s, distance }: Props) {
   const rate = s.taux_occupation;
-  const isCritical = rate >= CRITICAL_OCCUPATION_THRESHOLD;
-  const isHigh = rate >= HIGH_OCCUPATION_THRESHOLD;
+  // A hospital that stopped reporting is shown as unknown, whatever its last rate was.
+  const level = s.is_stale ? "unknown" : occupationLevel(rate);
+  const isCritical = level === "critical";
+  const isHigh = level === "high";
+  const isUnknown = level === "unknown";
 
-  const barColor = isCritical ? "bg-red-500" : isHigh ? "bg-amber-400" : "bg-emerald-500";
-  const rateColor = isCritical ? "text-red-400" : isHigh ? "text-amber-400" : "text-emerald-400";
+  const barColor = isCritical ? "bg-red-500" : isHigh ? "bg-amber-400" : isUnknown ? "bg-slate-600" : "bg-emerald-500";
+  const rateColor = isCritical ? "text-red-400" : isHigh ? "text-amber-400" : isUnknown ? "text-slate-500" : "text-emerald-400";
 
-  const statusLabel = isCritical ? "Critique" : isHigh ? "Chargé" : "Disponible";
+  const statusLabel = s.is_stale
+    ? "Données périmées"
+    : isUnknown
+    ? "Données indisponibles"
+    : isCritical
+    ? "Critique"
+    : isHigh
+    ? "Chargé"
+    : "Disponible";
   const statusClasses = isCritical
     ? "bg-red-500/10 text-red-400 border border-red-500/20"
     : isHigh
     ? "bg-amber-400/10 text-amber-400 border border-amber-500/20"
+    : isUnknown
+    ? "bg-slate-500/10 text-slate-400 border border-slate-500/20"
     : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+
+  const updatedAt = new Date(s.timestamp).toLocaleString("fr-CA", {
+    timeZone: "America/Toronto",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
   const cardBorder = isCritical
     ? "border-red-500/20"
@@ -73,11 +94,15 @@ export function HospitalCard({ snapshot: s, distance }: Props) {
         </div>
       </div>
 
+      {s.is_stale && (
+        <p className="text-xs text-slate-400">Dernier relevé : {updatedAt}</p>
+      )}
+
       {/* Progress bar */}
       <div className="h-1 rounded-full bg-surface-subtle overflow-hidden">
         <div
           className={`h-full rounded-full ${barColor}`}
-          style={{ width: `${Math.min(rate ?? 0, 150) / 1.5}%` }}
+          style={{ width: `${isUnknown ? 0 : Math.min(rate ?? 0, 150) / 1.5}%` }}
         />
       </div>
 

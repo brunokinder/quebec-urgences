@@ -35,6 +35,17 @@ export default async function HospitalPage({ params }: Props) {
           {formatHospitalName(current.nom_installation)}
         </h2>
         <p className="text-slate-500 mt-1">{current.region}</p>
+        {current.is_stale && (
+          <p className="mt-3 rounded-lg border border-amber-500/20 bg-amber-500/5 px-3 py-2 text-sm text-amber-300">
+            Cette installation ne transmet plus de données. Dernier relevé :{" "}
+            {new Date(current.timestamp).toLocaleString("fr-CA", {
+              timeZone: "America/Toronto",
+              dateStyle: "medium",
+              timeStyle: "short",
+            })}
+            .
+          </p>
+        )}
       </div>
 
       {/* Key metrics */}

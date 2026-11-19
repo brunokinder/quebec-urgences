@@ -14,3 +14,9 @@ export const CRITICAL_OCCUPATION_THRESHOLD = 100;
 
 /** Occupation rate threshold considered high. */
 export const HIGH_OCCUPATION_THRESHOLD = 80;
+
+/**
+ * A hospital whose latest report is this many hours older than the freshest
+ * report in the dataset is considered stale (it has stopped reporting).
+ */
+export const STALE_AFTER_HOURS = 3;

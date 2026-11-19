@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback, useEffect } from "react";
 import type { UrgenceSnapshot } from "@quebec-urgences/shared";
+import { hasCurrentRate } from "@quebec-urgences/shared";
 import { HospitalCard } from "./HospitalCard";
 import { getHospitalCoords, distanceKm } from "@/lib/hospitalCoordinates";
 import { FSA_COORDS, getCoordsByFsa } from "@/lib/fsaCoordinates";
@@ -106,8 +107,15 @@ export function HospitalCards({ snapshots }: Props) {
   // All hospitals sorted: by distance when location known, by lowest occupancy otherwise
   const allSorted = useMemo((): SortedItem[] => {
     if (location.status !== "detected") {
+      // Lowest occupancy first; hospitals without a current rate go last so
+      // they never look like the best option.
       return [...snapshots]
-        .sort((a, b) => (a.taux_occupation ?? 0) - (b.taux_occupation ?? 0))
+        .sort((a, b) => {
+          const aOk = hasCurrentRate(a);
+          const bOk = hasCurrentRate(b);
+          if (aOk !== bOk) return aOk ? -1 : 1;
+          return (a.taux_occupation ?? 0) - (b.taux_occupation ?? 0);
+        })
         .map((s) => ({ snapshot: s }));
     }
     const userCoords = location.coords;

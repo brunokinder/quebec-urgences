@@ -1,17 +1,20 @@
 import { supabase } from "./supabase";
 import type { UrgenceSnapshot, RegionSummary } from "@quebec-urgences/shared";
+import { CRITICAL_OCCUPATION_THRESHOLD, hasCurrentRate, markStale } from "@quebec-urgences/shared";
 
 /**
  * Latest snapshot for every hospital (via the urgences_latest view).
+ * Each row gets `is_stale` when that hospital has stopped reporting.
+ * Sorted by occupation (highest first), unknown rates last.
  */
 export async function getLatestSnapshots(): Promise<UrgenceSnapshot[]> {
   const { data, error } = await supabase
     .from("urgences_latest")
     .select("*")
-    .order("taux_occupation", { ascending: false });
+    .order("taux_occupation", { ascending: false, nullsFirst: false });
 
   if (error) throw new Error(error.message);
-  return data ?? [];
+  return markStale((data ?? []) as UrgenceSnapshot[]);
 }
 
 /**
@@ -37,29 +40,35 @@ export async function getHospitalTrend(
 
 /**
  * Regional summary — computed from latest snapshots.
+ * Only hospitals with a current, known rate count toward the average;
+ * stale or missing rates are excluded instead of being treated as 0%.
  */
-export async function getRegionSummaries(): Promise<RegionSummary[]> {
-  const latest = await getLatestSnapshots();
+export async function getRegionSummaries(snapshots?: UrgenceSnapshot[]): Promise<RegionSummary[]> {
+  const latest = snapshots ?? (await getLatestSnapshots());
 
-  const byRegion = new Map<string, { total: number; count: number; over100: number }>();
+  const byRegion = new Map<string, { total: number; reporting: number; count: number; over100: number }>();
 
   for (const row of latest) {
-    const prev = byRegion.get(row.region) ?? { total: 0, count: 0, over100: 0 };
-    byRegion.set(row.region, {
-      total: prev.total + (row.taux_occupation ?? 0),
-      count: prev.count + 1,
-      over100: prev.over100 + (row.taux_occupation >= 100 ? 1 : 0),
-    });
+    const prev = byRegion.get(row.region) ?? { total: 0, reporting: 0, count: 0, over100: 0 };
+    prev.count += 1;
+    if (hasCurrentRate(row)) {
+      const rate = row.taux_occupation as number;
+      prev.total += rate;
+      prev.reporting += 1;
+      if (rate >= CRITICAL_OCCUPATION_THRESHOLD) prev.over100 += 1;
+    }
+    byRegion.set(row.region, prev);
   }
 
   return Array.from(byRegion.entries())
-    .map(([region, { total, count, over100 }]) => ({
+    .map(([region, { total, reporting, count, over100 }]) => ({
       region,
-      avg_taux_occupation: Math.round((total / count) * 10) / 10,
+      avg_taux_occupation: reporting > 0 ? Math.round((total / reporting) * 10) / 10 : null,
       hospital_count: count,
+      reporting_count: reporting,
       hospitals_over_100: over100,
     }))
-    .sort((a, b) => b.avg_taux_occupation - a.avg_taux_occupation);
+    .sort((a, b) => (b.avg_taux_occupation ?? -1) - (a.avg_taux_occupation ?? -1));
 }
 
 /**

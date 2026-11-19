@@ -51,18 +51,37 @@ function toInt(value: string | undefined): number | null {
 // MSSS timestamps are in Quebec local time (America/Toronto) with no offset,
 // e.g. "2026-03-03T8:45". We pad the hour and append the correct UTC offset
 // (EST −05:00 or EDT −04:00) so the value stored in the DB is unambiguous.
-function quebecUtcOffset(date: Date): string {
+function quebecUtcOffsetMinutes(instant: Date): number {
   // Intl gives us e.g. "GMT-5" or "GMT-4" for the given instant
   const part = new Intl.DateTimeFormat("en-CA", {
     timeZone: "America/Toronto",
     timeZoneName: "shortOffset",
   })
-    .formatToParts(date)
+    .formatToParts(instant)
     .find((p) => p.type === "timeZoneName")?.value ?? "GMT-5";
-  const match = part.match(/GMT([+-]?\d+)/);
-  const h = match ? parseInt(match[1], 10) : -5;
-  const sign = h <= 0 ? "-" : "+";
-  return `${sign}${String(Math.abs(h)).padStart(2, "0")}:00`;
+  const match = part.match(/GMT([+-]\d+)(?::(\d+))?/);
+  if (!match) return -300;
+  const h = parseInt(match[1], 10);
+  const m = match[2] ? parseInt(match[2], 10) : 0;
+  return h * 60 + Math.sign(h || 1) * m;
+}
+
+function formatOffset(minutes: number): string {
+  const sign = minutes <= 0 ? "-" : "+";
+  const abs = Math.abs(minutes);
+  return `${sign}${String(Math.floor(abs / 60)).padStart(2, "0")}:${String(abs % 60).padStart(2, "0")}`;
+}
+
+/**
+ * UTC offset in effect in Quebec at a given Quebec wall-clock time.
+ * Independent of the machine's own time zone: we read the wall-clock fields
+ * as if they were UTC, guess the offset, then correct once (handles DST).
+ */
+function quebecOffsetForWallClock(y: number, mo: number, d: number, h: number, mi: number): string {
+  const asUtc = Date.UTC(y, mo - 1, d, h, mi);
+  const guess = quebecUtcOffsetMinutes(new Date(asUtc));
+  const offset = quebecUtcOffsetMinutes(new Date(asUtc - guess * 60_000));
+  return formatOffset(offset);
 }
 
 function parseTimestamp(value: string): string {
@@ -70,9 +89,12 @@ function parseTimestamp(value: string): string {
   const [datePart, timePart] = value.split("T");
   if (!datePart || !timePart) return value;
   const [hours, minutes] = timePart.split(":");
-  const padded = `${datePart}T${(hours ?? "0").padStart(2, "0")}:${(minutes ?? "00").padStart(2, "0")}:00`;
-  const offset = quebecUtcOffset(new Date(padded));
-  return `${padded}${offset}`;
+  const hh = (hours ?? "0").padStart(2, "0");
+  const mm = (minutes ?? "00").padStart(2, "0");
+  const [y, mo, d] = datePart.split("-").map(Number);
+  if (!y || !mo || !d) return value;
+  const offset = quebecOffsetForWallClock(y, mo, d, Number(hh), Number(mm));
+  return `${datePart}T${hh}:${mm}:00${offset}`;
 }
 
 // ─── CKAN API types ─────────────────────────────────────────────────────────

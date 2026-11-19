@@ -65,14 +65,15 @@ export default function HospitalMapClient({ snapshots }: Props) {
 
       {snapshots.map((s) => {
         const coords = getHospitalCoords(s.nom_installation, s.region);
+        const known = s.taux_occupation != null && !s.is_stale;
         const rate = s.taux_occupation ?? 0;
-        const color = getMarkerColor(s.taux_occupation);
+        const color = getMarkerColor(known ? s.taux_occupation : null);
 
         return (
           <CircleMarker
             key={s.id}
             center={coords}
-            radius={rate >= CRITICAL_OCCUPATION_THRESHOLD ? 8 : rate >= HIGH_OCCUPATION_THRESHOLD ? 7 : 6}
+            radius={!known ? 5 : rate >= CRITICAL_OCCUPATION_THRESHOLD ? 8 : rate >= HIGH_OCCUPATION_THRESHOLD ? 7 : 6}
             pathOptions={{
               fillColor: color,
               color: color,
@@ -97,23 +98,27 @@ export default function HospitalMapClient({ snapshots }: Props) {
                       borderRadius: 9999,
                       fontSize: 13,
                       fontWeight: 700,
-                      background:
-                        rate >= CRITICAL_OCCUPATION_THRESHOLD
+                      background: !known
+                        ? "#e2e8f0"
+                        : rate >= CRITICAL_OCCUPATION_THRESHOLD
                           ? "#fee2e2"
                           : rate >= HIGH_OCCUPATION_THRESHOLD
                           ? "#fef3c7"
                           : "#d1fae5",
-                      color:
-                        rate >= CRITICAL_OCCUPATION_THRESHOLD
+                      color: !known
+                        ? "#475569"
+                        : rate >= CRITICAL_OCCUPATION_THRESHOLD
                           ? "#b91c1c"
                           : rate >= HIGH_OCCUPATION_THRESHOLD
                           ? "#92400e"
                           : "#065f46",
                     }}
                   >
-                    {rate.toFixed(0)}%
+                    {s.taux_occupation == null ? "—" : `${rate.toFixed(0)}%`}
                   </span>
-                  <span style={{ fontSize: 12, color: "#374151" }}>occupation</span>
+                  <span style={{ fontSize: 12, color: "#374151" }}>
+                    {s.is_stale ? "données périmées" : "occupation"}
+                  </span>
                 </div>
                 {s.nb_patients_civieres != null && (
                   <p style={{ fontSize: 12, color: "#374151", marginBottom: 2 }}>

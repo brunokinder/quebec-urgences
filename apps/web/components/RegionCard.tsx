@@ -1,5 +1,5 @@
 import type { RegionSummary } from "@quebec-urgences/shared";
-import { CRITICAL_OCCUPATION_THRESHOLD, HIGH_OCCUPATION_THRESHOLD } from "@quebec-urgences/shared";
+import { occupationLevel } from "@quebec-urgences/shared";
 
 interface Props {
   region: RegionSummary;
@@ -7,11 +7,14 @@ interface Props {
 
 export function RegionCard({ region }: Props) {
   const rate = region.avg_taux_occupation;
-  const isCritical = rate >= CRITICAL_OCCUPATION_THRESHOLD;
-  const isHigh = rate >= HIGH_OCCUPATION_THRESHOLD;
+  const level = occupationLevel(rate);
+  const isCritical = level === "critical";
+  const isHigh = level === "high";
+  const isUnknown = level === "unknown";
+  const missing = region.hospital_count - region.reporting_count;
 
-  const barColor = isCritical ? "bg-red-500" : isHigh ? "bg-amber-400" : "bg-emerald-500";
-  const rateColor = isCritical ? "text-red-400" : isHigh ? "text-amber-400" : "text-emerald-400";
+  const barColor = isCritical ? "bg-red-500" : isHigh ? "bg-amber-400" : isUnknown ? "bg-slate-600" : "bg-emerald-500";
+  const rateColor = isCritical ? "text-red-400" : isHigh ? "text-amber-400" : isUnknown ? "text-slate-500" : "text-emerald-400";
   const cardBorder = isCritical
     ? "border-red-500/20 shadow-red-500/5"
     : isHigh
@@ -26,7 +29,7 @@ export function RegionCard({ region }: Props) {
 
       <div className="flex items-end justify-between">
         <span className={`text-3xl font-bold tabular-nums ${rateColor}`}>
-          {rate.toFixed(0)}%
+          {rate != null ? `${rate.toFixed(0)}%` : "—"}
         </span>
         <span className="text-xs text-slate-600 mb-1">{region.hospital_count} inst.</span>
       </div>
@@ -35,9 +38,13 @@ export function RegionCard({ region }: Props) {
       <div className="h-1 rounded-full bg-surface-subtle overflow-hidden">
         <div
           className={`h-full rounded-full transition-all ${barColor}`}
-          style={{ width: `${Math.min(rate, 150) / 1.5}%` }}
+          style={{ width: `${Math.min(rate ?? 0, 150) / 1.5}%` }}
         />
       </div>
+
+      {missing > 0 && (
+        <p className="text-xs text-slate-500">{missing} inst. sans données récentes</p>
+      )}
 
       {region.hospitals_over_100 > 0 && (
         <p className="text-xs text-red-400 font-medium">

@@ -4,15 +4,16 @@
 export interface UrgenceRow {
   nom_installation: string;
   region: string;
-  nb_civieres: number;
-  nb_patients_civieres: number;
-  taux_occupation: number;
-  nb_patients_civieres_24h: number;
-  nb_patients_civieres_48h: number;
-  nb_personnes_presentes: number;
-  nb_pec: number;
-  dms_ambulatoire: number;
-  dms_civieres: number;
+  nb_civieres: number | null;
+  nb_patients_civieres: number | null;
+  /** Computed from occupied / functional stretchers; null when either is missing. */
+  taux_occupation: number | null;
+  nb_patients_civieres_24h: number | null;
+  nb_patients_civieres_48h: number | null;
+  nb_personnes_presentes: number | null;
+  nb_pec: number | null;
+  dms_ambulatoire: number | null;
+  dms_civieres: number | null;
 }
 
 /**
@@ -21,6 +22,11 @@ export interface UrgenceRow {
 export interface UrgenceSnapshot extends UrgenceRow {
   id: string;
   timestamp: string; // ISO 8601
+  /**
+   * Set by the web app: true when this hospital's latest report is much older
+   * than the freshest report in the same batch (it has stopped reporting).
+   */
+  is_stale?: boolean;
 }
 
 /**
@@ -43,8 +49,11 @@ export interface UrgenceDailyRollup {
  */
 export interface RegionSummary {
   region: string;
-  avg_taux_occupation: number;
+  /** Average over hospitals with a current, known rate; null if none. */
+  avg_taux_occupation: number | null;
   hospital_count: number;
+  /** Hospitals included in the average (current data with a known rate). */
+  reporting_count: number;
   hospitals_over_100: number;
 }
 
