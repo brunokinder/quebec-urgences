@@ -58,6 +58,30 @@ export interface RegionSummary {
 }
 
 /**
+ * Latest rate vs the rate a few hours earlier (get_hospital_trends RPC).
+ */
+export interface HospitalTrend {
+  nom_installation: string;
+  taux_now: number | null;
+  taux_before: number | null;
+  now_timestamp: string;
+  before_timestamp: string;
+}
+
+/**
+ * Median occupation for one weekday × hour, Quebec local time
+ * (get_hospital_hourly_profile RPC).
+ */
+export interface HourlyProfileCell {
+  /** 0 = Sunday … 6 = Saturday */
+  dow: number;
+  /** 0–23 */
+  hour: number;
+  median_taux: number;
+  samples: number;
+}
+
+/**
  * Ingestion result returned by scripts/ingest.ts
  */
 export interface IngestResult {

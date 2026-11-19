@@ -1,7 +1,8 @@
-import type { UrgenceSnapshot } from "@quebec-urgences/shared";
+import type { HospitalTrend, UrgenceSnapshot } from "@quebec-urgences/shared";
 import { occupationLevel } from "@quebec-urgences/shared";
 import Link from "next/link";
 import { formatHospitalName } from "../lib/formatHospitalName";
+import { TrendBadge } from "./TrendBadge";
 
 /** Format decimal hours (e.g. 4.03) as "4h 02m" or "4h" if 0 minutes. */
 function formatDuration(hours: number): string {
@@ -14,9 +15,10 @@ function formatDuration(hours: number): string {
 interface Props {
   snapshot: UrgenceSnapshot;
   distance?: number;
+  trend?: HospitalTrend;
 }
 
-export function HospitalCard({ snapshot: s, distance }: Props) {
+export function HospitalCard({ snapshot: s, distance, trend }: Props) {
   const rate = s.taux_occupation;
   // A hospital that stopped reporting is shown as unknown, whatever its last rate was.
   const level = s.is_stale ? "unknown" : occupationLevel(rate);
@@ -87,10 +89,11 @@ export function HospitalCard({ snapshot: s, distance }: Props) {
         <span className={`text-3xl font-bold tabular-nums ${rateColor}`}>
           {rate != null ? `${rate.toFixed(0)}%` : "—"}
         </span>
-        <div className="flex items-center gap-1.5 flex-wrap justify-end">
+        <div className="flex flex-col items-end gap-1">
           <span className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${statusClasses}`}>
             {statusLabel}
           </span>
+          {!isUnknown && <TrendBadge trend={trend} />}
         </div>
       </div>
 

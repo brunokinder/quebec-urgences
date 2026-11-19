@@ -1,4 +1,4 @@
-import { getLatestSnapshots, getRegionSummaries, getLastIngestion } from "@/lib/queries";
+import { getLatestSnapshots, getRegionSummaries, getLastIngestion, getHospitalTrends } from "@/lib/queries";
 import { hasCurrentRate, occupationLevel } from "@quebec-urgences/shared";
 import { RegionCard } from "@/components/RegionCard";
 import { HospitalCards } from "@/components/HospitalCards";
@@ -9,9 +9,10 @@ import { OfficialPerformancePanel } from "@/components/OfficialPerformancePanel"
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [snapshots, lastIngestion] = await Promise.all([
+  const [snapshots, lastIngestion, trends] = await Promise.all([
     getLatestSnapshots(),
     getLastIngestion(),
+    getHospitalTrends(),
   ]);
   const regions = await getRegionSummaries(snapshots);
 
@@ -49,7 +50,7 @@ export default async function HomePage() {
 
       {/* Hospitals */}
       <section>
-        <HospitalCards snapshots={snapshots} />
+        <HospitalCards snapshots={snapshots} trends={trends} />
       </section>
 
       <OfficialPerformancePanel />

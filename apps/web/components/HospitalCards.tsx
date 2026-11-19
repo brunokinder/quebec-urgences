@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback, useEffect } from "react";
-import type { UrgenceSnapshot } from "@quebec-urgences/shared";
+import type { HospitalTrend, UrgenceSnapshot } from "@quebec-urgences/shared";
 import { hasCurrentRate } from "@quebec-urgences/shared";
 import { HospitalCard } from "./HospitalCard";
 import { getHospitalCoords, distanceKm } from "@/lib/hospitalCoordinates";
@@ -9,6 +9,8 @@ import { FSA_COORDS, getCoordsByFsa } from "@/lib/fsaCoordinates";
 
 interface Props {
   snapshots: UrgenceSnapshot[];
+  /** Keyed by nom_installation; empty when trend data is unavailable. */
+  trends?: Record<string, HospitalTrend>;
 }
 
 type LocationState =
@@ -41,7 +43,7 @@ async function geocodePostalCode(raw: string): Promise<[number, number] | null> 
   }
 }
 
-export function HospitalCards({ snapshots }: Props) {
+export function HospitalCards({ snapshots, trends = {} }: Props) {
   const [location, setLocation] = useState<LocationState>({ status: "idle" });
   const [showAll, setShowAll] = useState(false);
   const [postalInput, setPostalInput] = useState("");
@@ -243,6 +245,7 @@ export function HospitalCards({ snapshots }: Props) {
               key={item.snapshot.id}
               snapshot={item.snapshot}
               distance={item.distance}
+              trend={trends[item.snapshot.nom_installation]}
             />
           ))}
           {visible.length === 0 && (

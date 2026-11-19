@@ -1,6 +1,55 @@
 import { supabase } from "./supabase";
-import type { UrgenceSnapshot, RegionSummary } from "@quebec-urgences/shared";
-import { CRITICAL_OCCUPATION_THRESHOLD, hasCurrentRate, markStale } from "@quebec-urgences/shared";
+import type {
+  UrgenceSnapshot,
+  RegionSummary,
+  HospitalTrend,
+  HourlyProfileCell,
+} from "@quebec-urgences/shared";
+import {
+  CRITICAL_OCCUPATION_THRESHOLD,
+  PROFILE_WEEKS,
+  TREND_WINDOW_HOURS,
+  hasCurrentRate,
+  markStale,
+} from "@quebec-urgences/shared";
+
+/**
+ * Latest rate vs TREND_WINDOW_HOURS earlier, keyed by installation name.
+ * Optional enhancement: returns {} (no arrows) if the RPC from migration 005
+ * isn't installed or fails, rather than breaking the page.
+ */
+export async function getHospitalTrends(): Promise<Record<string, HospitalTrend>> {
+  const { data, error } = await supabase.rpc("get_hospital_trends", {
+    p_hours: TREND_WINDOW_HOURS,
+  });
+  if (error) {
+    console.warn("get_hospital_trends unavailable:", error.message);
+    return {};
+  }
+  const out: Record<string, HospitalTrend> = {};
+  for (const t of (data ?? []) as HospitalTrend[]) out[t.nom_installation] = t;
+  return out;
+}
+
+/**
+ * Median occupation per weekday × hour for one hospital.
+ * Returns [] if the RPC from migration 005 isn't installed or fails.
+ */
+export async function getHourlyProfile(nomInstallation: string): Promise<HourlyProfileCell[]> {
+  const { data, error } = await supabase.rpc("get_hospital_hourly_profile", {
+    p_installation: nomInstallation,
+    p_weeks: PROFILE_WEEKS,
+  });
+  if (error) {
+    console.warn("get_hospital_hourly_profile unavailable:", error.message);
+    return [];
+  }
+  return ((data ?? []) as HourlyProfileCell[]).map((c) => ({
+    ...c,
+    median_taux: Number(c.median_taux),
+    samples: Number(c.samples),
+  }));
+}
 
 /**
  * Latest snapshot for every hospital (via the urgences_latest view).

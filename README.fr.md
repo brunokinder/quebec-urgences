@@ -19,8 +19,10 @@ Tableau de bord open source affichant le **taux d'occupation en temps réel** de
 - Taux d'occupation de ~200 installations, mis à jour chaque heure
 - Vue régionale avec indicateurs de surcharge
 - Détail par hôpital avec graphique de tendance sur 7 jours
+- Flèches de tendance : chaque urgence se remplit-elle ou se vide-t-elle par rapport à il y a 3 heures?
+- Comparaison avec l'achalandage habituel et carte de chaleur jour × heure (médiane des 8 dernières semaines), avec les heures habituellement les plus calmes
 - Filtre par région et recherche par nom
-- Archive CSV publique dans `/data/` (historique permanent)
+- Historique horaire complet conservé dans Supabase
 - Endpoint `/api/status` pour surveiller la santé du pipeline
 
 ---
@@ -59,6 +61,9 @@ pnpm install
 2. Dans l'éditeur SQL, exécuter les migrations dans l'ordre :
    - `supabase/migrations/001_create_snapshots.sql`
    - `supabase/migrations/002_rollup_function.sql`
+   - `supabase/migrations/003_ingest_cron.sql` *(optionnel — ingestion horaire via pg_cron, voir [Pipeline d'ingestion](#pipeline-dingestion))*
+   - `supabase/migrations/004_row_level_security.sql` *(requis — rend la clé publique anon en lecture seule)*
+   - `supabase/migrations/005_trends_and_profiles.sql` *(flèches de tendance et carte de chaleur; le tableau de bord fonctionne sans, moins ces fonctionnalités)*
 3. Copier `.env.example` en `.env.local` et remplir les variables :
 
 ```bash
@@ -90,18 +95,34 @@ pnpm dev
 ## Pipeline d'ingestion
 
 ```
-CSV MSSS (mis à jour toutes les heures)
+API CKAN Données Québec (principale) / CSV MSSS (secours) — mis à jour toutes les heures
         │
-GitHub Actions (cron : 5 * * * *)
-        │  • Récupération du CSV
-        │  • Analyse + validation
-        │  • Upsert dans Supabase (ON CONFLICT DO NOTHING)
-        │  • Archive CSV → /data/{année}/{mois}/{jour}T{heure}00Z.csv
+        ├── pg_cron dans Supabase (5 * * * *) → Edge Function ingest-urgences
+        │      • Récupération, analyse, validation
+        │      • Upsert dans Supabase (ON CONFLICT DO NOTHING)
+        │
+        └── GitHub Actions (5 * * * *) — jusqu'à la mise en service de pg_cron
+               • Même récupération + upsert, via scripts/ingest.ts
+               • Exécutions planifiées ignorées si INGEST_VIA_PG_CRON=true
         │
 Supabase — urgences_snapshots
         │
 Tableau de bord Next.js (Vercel)
 ```
+
+Les deux chemins partagent le même code d'ingestion : `supabase/functions/_shared/urgences.ts`
+(utilisé par l'Edge Function sous Deno et par `scripts/ingest.ts` sous Node).
+
+**Choisir qui écrit dans la base.** L'horaire de GitHub peut dériver de
+plusieurs heures en période de charge; pg_cron est donc l'écrivain privilégié. Pour basculer :
+
+1. Déployer la fonction : `supabase functions deploy ingest-urgences`
+2. Exécuter `supabase/migrations/003_ingest_cron.sql` (suivre les prérequis en en-tête)
+3. Dans GitHub → Settings → Secrets and variables → Actions → **Variables**, définir
+   `INGEST_VIA_PG_CRON` = `true`
+
+Les exécutions planifiées de GitHub Actions sont alors ignorées, ce qui évite la
+double ingestion. Le workflow peut toujours être lancé manuellement en secours.
 
 ### Secrets GitHub requis
 
@@ -109,6 +130,12 @@ Tableau de bord Next.js (Vercel)
 |--------|-------------|
 | `SUPABASE_URL` | URL de votre projet Supabase |
 | `SUPABASE_SERVICE_ROLE_KEY` | Clé service role (Settings > API) |
+
+### Variables GitHub optionnelles
+
+| Variable | Description |
+|----------|-------------|
+| `INGEST_VIA_PG_CRON` | `true` une fois l'ingestion pg_cron en service; les ingestions planifiées de GitHub Actions sont alors ignorées |
 
 ---
 
@@ -136,8 +163,8 @@ Tableau de bord Next.js (Vercel)
 
 - Données **horaires** conservées pour les **60 derniers jours**
 - Données plus anciennes **agrégées en moyennes journalières** (`urgences_daily_rollups`)
-- Le rollup s'exécute chaque dimanche via GitHub Actions
-- Archive CSV permanente dans `/data/` (dépôt Git)
+- Le rollup est disponible comme workflow GitHub Actions manuel (son horaire hebdomadaire est désactivé pour l'instant, l'historique horaire est donc conservé)
+- Supabase est le seul lieu de stockage des données — rien n'est versionné dans le dépôt Git
 
 ---
 
