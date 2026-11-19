@@ -2,21 +2,20 @@
   "name": "quebec-urgences",
   "version": "0.0.1",
   "private": true,
-"scripts": {
+  "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
-    "lint": "turbo lint",
     "type-check": "turbo type-check",
     "ingest": "tsx scripts/ingest.ts"
   },
   "devDependencies": {
-    "turbo": "^2.3.3",
-    "typescript": "^5.7.2",
-    "tsx": "^4.19.2",
-    "@types/node": "^22.10.2"
+    "@types/node": "^24.19.2",
+    "tsx": "^4.23.15",
+    "turbo": "^2.11.13",
+    "typescript": "^5.9.3"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   },
   "packageManager": "pnpm@9.15.2"
 }

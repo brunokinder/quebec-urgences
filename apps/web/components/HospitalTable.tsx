@@ -65,12 +65,12 @@ export function HospitalTable({ snapshots }: Props) {
           placeholder="Rechercher un établissement…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="bg-surface-card border border-surface-border rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 flex-1 min-w-48 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+          className="bg-surface-card border border-surface-border rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 flex-1 min-w-48 focus:outline-hidden focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors"
         />
         <select
           value={region}
           onChange={(e) => setRegion(e.target.value)}
-          className="bg-surface-card border border-surface-border rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors cursor-pointer"
+          className="bg-surface-card border border-surface-border rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-hidden focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors cursor-pointer"
         >
           {regions.map((r) => (
             <option key={r} value={r} className="bg-surface-card">

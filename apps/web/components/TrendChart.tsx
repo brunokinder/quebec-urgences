@@ -57,7 +57,7 @@ export function TrendChart({ data }: Props) {
               color: "#e2e8f0",
               fontSize: 12,
             }}
-            formatter={(value: number) => [`${value?.toFixed(1)}%`, "Taux d'occupation"]}
+            formatter={(value) => [`${Number(value).toFixed(1)}%`, "Taux d'occupation"]}
           />
           <ReferenceLine
             y={CRITICAL_OCCUPATION_THRESHOLD}
