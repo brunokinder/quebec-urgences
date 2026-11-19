@@ -41,7 +41,15 @@ Run the migrations in Supabase's SQL editor:
 ```
 supabase/migrations/001_create_snapshots.sql
 supabase/migrations/002_rollup_function.sql
+supabase/migrations/004_row_level_security.sql
+supabase/migrations/005_trends_and_profiles.sql
 ```
+
+(`003_ingest_cron.sql` is only needed if you deploy the pg_cron ingestion; see the README.)
+
+Ingestion logic (fetch, parse, upsert) lives in `supabase/functions/_shared/urgences.ts`
+and is shared by `scripts/ingest.ts` and the `ingest-urgences` Edge Function — change it there.
+Keep that file import-free so it runs under both Node and Deno.
 
 ### Run locally
 
@@ -80,7 +88,7 @@ apps/web/          Next.js dashboard (frontend)
 packages/shared/   Shared TypeScript types & constants
 scripts/           Ingestion & rollup scripts (run by GitHub Actions)
 supabase/          Database migrations
-data/              Hourly CSV archive (auto-committed by CI)
+data/              Legacy CSV snapshots (March 2026, no longer updated — data lives in Supabase)
 ```
 
 ---

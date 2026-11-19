@@ -1,13 +1,16 @@
 "use client";
 
 import { useState, useMemo, useCallback, useEffect } from "react";
-import type { UrgenceSnapshot } from "@quebec-urgences/shared";
+import type { HospitalTrend, UrgenceSnapshot } from "@quebec-urgences/shared";
+import { hasCurrentRate } from "@quebec-urgences/shared";
 import { HospitalCard } from "./HospitalCard";
 import { getHospitalCoords, distanceKm } from "@/lib/hospitalCoordinates";
 import { FSA_COORDS, getCoordsByFsa } from "@/lib/fsaCoordinates";
 
 interface Props {
   snapshots: UrgenceSnapshot[];
+  /** Keyed by nom_installation; empty when trend data is unavailable. */
+  trends?: Record<string, HospitalTrend>;
 }
 
 type LocationState =
@@ -40,7 +43,7 @@ async function geocodePostalCode(raw: string): Promise<[number, number] | null> 
   }
 }
 
-export function HospitalCards({ snapshots }: Props) {
+export function HospitalCards({ snapshots, trends = {} }: Props) {
   const [location, setLocation] = useState<LocationState>({ status: "idle" });
   const [showAll, setShowAll] = useState(false);
   const [postalInput, setPostalInput] = useState("");
@@ -106,8 +109,15 @@ export function HospitalCards({ snapshots }: Props) {
   // All hospitals sorted: by distance when location known, by lowest occupancy otherwise
   const allSorted = useMemo((): SortedItem[] => {
     if (location.status !== "detected") {
+      // Lowest occupancy first; hospitals without a current rate go last so
+      // they never look like the best option.
       return [...snapshots]
-        .sort((a, b) => (a.taux_occupation ?? 0) - (b.taux_occupation ?? 0))
+        .sort((a, b) => {
+          const aOk = hasCurrentRate(a);
+          const bOk = hasCurrentRate(b);
+          if (aOk !== bOk) return aOk ? -1 : 1;
+          return (a.taux_occupation ?? 0) - (b.taux_occupation ?? 0);
+        })
         .map((s) => ({ snapshot: s }));
     }
     const userCoords = location.coords;
@@ -235,6 +245,7 @@ export function HospitalCards({ snapshots }: Props) {
               key={item.snapshot.id}
               snapshot={item.snapshot}
               distance={item.distance}
+              trend={trends[item.snapshot.nom_installation]}
             />
           ))}
           {visible.length === 0 && (

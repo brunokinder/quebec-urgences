@@ -19,8 +19,10 @@ Open source dashboard displaying **real-time occupancy rates** of Quebec emergen
 - Occupancy rates for ~200 hospitals, updated every hour
 - Regional overview with overcrowding indicators
 - Hospital detail page with 7-day hourly trend chart
+- Trend arrows: is each ER filling up or emptying compared with 3 hours ago?
+- "Usual level" comparison and weekday × hour heat map (median of the last 8 weeks), with the usually calmest hours of the day
 - Filter by region and search by name
-- Public CSV archive in `/data/` (permanent historical record)
+- Full hourly history stored in Supabase
 - `/api/status` endpoint for pipeline health monitoring
 
 ---
@@ -59,6 +61,9 @@ pnpm install
 2. In the SQL editor, run the migrations in order:
    - `supabase/migrations/001_create_snapshots.sql`
    - `supabase/migrations/002_rollup_function.sql`
+   - `supabase/migrations/003_ingest_cron.sql` *(optional — hourly ingestion via pg_cron, see [Ingestion Pipeline](#ingestion-pipeline))*
+   - `supabase/migrations/004_row_level_security.sql` *(required — makes the public anon key read-only)*
+   - `supabase/migrations/005_trends_and_profiles.sql` *(trend arrows and usual-level heat map; the dashboard works without it, minus those features)*
 3. Copy `.env.example` to `.env.local` and fill in your keys:
 
 ```bash
@@ -90,18 +95,34 @@ pnpm dev
 ## Ingestion Pipeline
 
 ```
-MSSS CSV (updated every hour)
+Données Québec CKAN API (primary) / MSSS CSV (fallback) — updated hourly
         │
-GitHub Actions (cron: 5 * * * *)
-        │  • Fetch CSV
-        │  • Parse + validate
-        │  • Upsert into Supabase (ON CONFLICT DO NOTHING)
-        │  • Archive CSV → /data/{year}/{month}/{day}T{hour}00Z.csv
+        ├── pg_cron in Supabase (5 * * * *) → Edge Function ingest-urgences
+        │      • Fetch, parse, validate
+        │      • Upsert into Supabase (ON CONFLICT DO NOTHING)
+        │
+        └── GitHub Actions (5 * * * *) — until pg_cron is live
+               • Same fetch + upsert, via scripts/ingest.ts
+               • Scheduled runs skipped when INGEST_VIA_PG_CRON=true
         │
 Supabase — urgences_snapshots
         │
 Next.js Dashboard (Vercel)
 ```
+
+Both paths share one ingestion core: `supabase/functions/_shared/urgences.ts`
+(used by the Edge Function under Deno and by `scripts/ingest.ts` under Node).
+
+**Choosing who writes to the database.** GitHub's scheduler can drift by
+hours under load, so pg_cron is the preferred writer. To switch:
+
+1. Deploy the function: `supabase functions deploy ingest-urgences`
+2. Run `supabase/migrations/003_ingest_cron.sql` (follow the prerequisites in its header)
+3. In GitHub → Settings → Secrets and variables → Actions → **Variables**, set
+   `INGEST_VIA_PG_CRON` = `true`
+
+From then on scheduled GitHub Actions runs are skipped, so data isn't ingested
+twice. You can still run the workflow manually as a backup.
 
 ### Required GitHub Secrets
 
@@ -109,6 +130,12 @@ Next.js Dashboard (Vercel)
 |--------|-------------|
 | `SUPABASE_URL` | Your Supabase project URL |
 | `SUPABASE_SERVICE_ROLE_KEY` | Service role key (Settings > API) |
+
+### Optional GitHub Variables
+
+| Variable | Description |
+|----------|-------------|
+| `INGEST_VIA_PG_CRON` | `true` once pg_cron ingestion is live; scheduled GitHub Actions ingests are then skipped |
 
 ---
 
@@ -136,8 +163,8 @@ Next.js Dashboard (Vercel)
 
 - **Hourly** data kept for the **last 60 days**
 - Older data is **aggregated into daily averages** (`urgences_daily_rollups`)
-- Rollup runs every Sunday via GitHub Actions
-- Raw CSV permanently archived in `/data/` (Git repository)
+- Rollup is available as a manual GitHub Actions workflow (its weekly schedule is currently disabled, so hourly history is kept)
+- Supabase is the only data store — nothing is committed to the Git repository
 
 ---
 

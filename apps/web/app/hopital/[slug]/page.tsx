@@ -1,8 +1,18 @@
 import { notFound } from "next/navigation";
-import { getLatestSnapshots, getHospitalTrend } from "@/lib/queries";
+import { TREND_WINDOW_HOURS, hasCurrentRate } from "@quebec-urgences/shared";
+import { getLatestSnapshots, getHospitalTrend, getHourlyProfile } from "@/lib/queries";
 import { OccupationBadge } from "@/components/OccupationBadge";
 import { TrendChart } from "@/components/TrendChart";
+import { TrendBadge } from "@/components/TrendBadge";
+import { WeeklyHeatmap } from "@/components/WeeklyHeatmap";
 import { formatHospitalName } from "@/lib/formatHospitalName";
+import {
+  calmestHours,
+  indexProfile,
+  quebecDowHour,
+  trendFromSeries,
+  weekdayName,
+} from "@/lib/trends";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -14,13 +24,26 @@ export default async function HospitalPage({ params }: Props) {
   const { slug } = await params;
   const nomInstallation = decodeURIComponent(slug);
 
-  const [snapshots, trend] = await Promise.all([
+  const [snapshots, trend, profileCells] = await Promise.all([
     getLatestSnapshots(),
     getHospitalTrend(nomInstallation, 7),
+    getHourlyProfile(nomInstallation),
   ]);
 
   const current = snapshots.find((s) => s.nom_installation === nomInstallation);
   if (!current) notFound();
+
+  // "Is it getting better or worse?" — only meaningful with current data.
+  const live = hasCurrentRate(current);
+  const recentTrend = live ? trendFromSeries(trend, nomInstallation, TREND_WINDOW_HOURS) : undefined;
+
+  // Usual level at this weekday × hour (Quebec time of the latest report).
+  const profile = indexProfile(profileCells);
+  const now = quebecDowHour(new Date(current.timestamp));
+  const usual = profile.get(`${now.dow}-${now.hour}`);
+  const usualDelta =
+    live && usual ? Math.round((current.taux_occupation as number) - usual.median_taux) : null;
+  const calmToday = calmestHours(profile, now.dow);
 
   return (
     <div className="space-y-6 max-w-3xl">
@@ -35,6 +58,17 @@ export default async function HospitalPage({ params }: Props) {
           {formatHospitalName(current.nom_installation)}
         </h2>
         <p className="text-slate-500 mt-1">{current.region}</p>
+        {current.is_stale && (
+          <p className="mt-3 rounded-lg border border-amber-500/20 bg-amber-500/5 px-3 py-2 text-sm text-amber-300">
+            Cette installation ne transmet plus de données. Dernier relevé :{" "}
+            {new Date(current.timestamp).toLocaleString("fr-CA", {
+              timeZone: "America/Toronto",
+              dateStyle: "medium",
+              timeStyle: "short",
+            })}
+            .
+          </p>
+        )}
       </div>
 
       {/* Key metrics */}
@@ -49,6 +83,34 @@ export default async function HospitalPage({ params }: Props) {
         <Metric label="Séjour moyen (civières)" value={current.dms_civieres != null ? `${current.dms_civieres}h` : "—"} />
       </div>
 
+      {/* Better or worse? — trend + comparison with the usual level */}
+      {live && (recentTrend || usual) && (
+        <div className="bg-surface-card rounded-xl border border-surface-border p-5 space-y-2">
+          <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">
+            Tendance
+          </h3>
+          <TrendBadge trend={recentTrend} variant="full" />
+          {usual && usualDelta != null && (
+            <p className="text-sm text-slate-300">
+              D&apos;habitude{" "}
+              <span className="font-semibold tabular-nums">{Math.round(usual.median_taux)}%</span> le{" "}
+              {weekdayName(now.dow)} à {now.hour}h — aujourd&apos;hui{" "}
+              <span className="font-semibold tabular-nums">
+                {Math.round(current.taux_occupation as number)}%
+              </span>{" "}
+              <span
+                className={
+                  usualDelta >= 5 ? "text-red-400" : usualDelta <= -5 ? "text-emerald-400" : "text-slate-400"
+                }
+              >
+                ({usualDelta >= 5 ? "plus achalandé" : usualDelta <= -5 ? "moins achalandé" : "comme d'habitude"}
+                {Math.abs(usualDelta) >= 5 ? `, ${usualDelta > 0 ? "+" : ""}${usualDelta} pts` : ""})
+              </span>
+            </p>
+          )}
+        </div>
+      )}
+
       {/* Trend chart */}
       <div className="bg-surface-card rounded-xl border border-surface-border p-5">
         <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-4">
@@ -56,6 +118,26 @@ export default async function HospitalPage({ params }: Props) {
         </h3>
         <TrendChart data={trend} />
       </div>
+
+      {/* Usual week — heat map */}
+      {profile.size > 0 && (
+        <div className="bg-surface-card rounded-xl border border-surface-border p-5 space-y-4">
+          <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-widest">
+            Achalandage habituel par heure
+          </h3>
+          {calmToday.length > 0 && (
+            <p className="text-sm text-slate-300">
+              Le {weekdayName(now.dow)}, c&apos;est habituellement plus calme vers{" "}
+              {calmToday.map((c) => `${c.hour}h`).join(", ")}.
+            </p>
+          )}
+          <WeeklyHeatmap profile={profile} now={now} />
+          <p className="text-xs text-slate-400">
+            Ces tendances servent à planifier une visite non urgente. En cas d&apos;urgence, n&apos;attendez
+            pas : composez le 911 ou appelez Info-Santé au 811.
+          </p>
+        </div>
+      )}
 
       <p className="text-xs leading-relaxed text-slate-500">
         Le nombre de personnes en attente est un portrait en direct. Le temps avant de voir un médecin

@@ -1,4 +1,5 @@
-import { getLatestSnapshots, getRegionSummaries, getLastIngestion } from "@/lib/queries";
+import { getLatestSnapshots, getRegionSummaries, getLastIngestion, getHospitalTrends } from "@/lib/queries";
+import { hasCurrentRate, occupationLevel } from "@quebec-urgences/shared";
 import { RegionCard } from "@/components/RegionCard";
 import { HospitalCards } from "@/components/HospitalCards";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -8,16 +9,16 @@ import { OfficialPerformancePanel } from "@/components/OfficialPerformancePanel"
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [snapshots, regions, lastIngestion] = await Promise.all([
+  const [snapshots, lastIngestion, trends] = await Promise.all([
     getLatestSnapshots(),
-    getRegionSummaries(),
     getLastIngestion(),
+    getHospitalTrends(),
   ]);
+  const regions = await getRegionSummaries(snapshots);
 
-  const criticalCount = snapshots.filter((s) => (s.taux_occupation ?? 0) >= 100).length;
-  const highCount = snapshots.filter(
-    (s) => (s.taux_occupation ?? 0) >= 80 && (s.taux_occupation ?? 0) < 100
-  ).length;
+  const current = snapshots.filter(hasCurrentRate);
+  const criticalCount = current.filter((s) => occupationLevel(s.taux_occupation) === "critical").length;
+  const highCount = current.filter((s) => occupationLevel(s.taux_occupation) === "high").length;
 
   return (
     <div className="space-y-8">
@@ -49,7 +50,7 @@ export default async function HomePage() {
 
       {/* Hospitals */}
       <section>
-        <HospitalCards snapshots={snapshots} />
+        <HospitalCards snapshots={snapshots} trends={trends} />
       </section>
 
       <OfficialPerformancePanel />
